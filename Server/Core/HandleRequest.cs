@@ -29,7 +29,7 @@ namespace Server.Core
                 return;
 
             var ipEndPoint = (IPEndPoint)connection.ConnectionInfo.RemoteEndPoint;
-            ConsoleHelper.Info(string.Format("{0}:{1} send client info, Name = {2}, Share = {3}", ipEndPoint.Address, ipEndPoint.Port, clientInfo.Name, clientInfo.CanAccess));
+            ConsoleHelper.Info(string.Format("{0}:{1} send client info, Name = {2}, CanAccess = {3}", ipEndPoint.Address, ipEndPoint.Port, clientInfo.Name, clientInfo.CanAccess));
 
             //Get ClientInfo
             var clientSession = ExistClient(ipEndPoint);
@@ -51,8 +51,6 @@ namespace Server.Core
                 };
 
                 _clientSessionList.Add(clientSession);
-
-
             }
 
             //Sync shared client list to all client
@@ -79,7 +77,10 @@ namespace Server.Core
                 sourceIPPort.Address, sourceIPPort.Port, sourceClient.Name,
                 targetIPPort.Address, targetIPPort.Port, targetClient.Name));
 
-            targetClient.Connection.SendObject<P2PClient>(PacketType.REQ_P2PPublicClient, new P2PClient { GUID = p2pRequest.FromGuid, IP = sourceIPPort.Address.ToString(), Port = sourceIPPort.Port });
+            //close the temp connection between Server and A/B
+            connection.CloseConnection(false);  
+
+            targetClient.Connection.SendObject<P2PClient>(PacketType.REQ_P2PSpecifiedClient, new P2PClient { GUID = p2pRequest.FromGuid, IP = sourceIPPort.Address.ToString(), Port = sourceIPPort.Port });
         }
 
         private void HandleConnectionClose(Connection connection)
@@ -93,6 +94,9 @@ namespace Server.Core
             var clientInfo = ExistClient(ipEndPoint);
             if (clientInfo != null)
                 _clientSessionList.Remove(clientInfo);
+
+            //Sync shared client list to all client
+            SyncSharedClients();
         }
     }
 }

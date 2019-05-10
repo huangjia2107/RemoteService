@@ -13,7 +13,7 @@ namespace Server.Models
         public const string REQ_SyncClientInfoList = "SyncClientInfoList";
 
         public const string REQ_P2PRequest = "P2PRequest";
-        public const string REQ_P2PPublicClient = "P2PPublicClient";
+        public const string REQ_P2PSpecifiedClient = "P2PSpecifiedClient";
         public const string REQ_P2PLocalClient = "P2PLocalClient";
 
         public const string REQ_P2PReady = "P2PReady";
@@ -22,6 +22,6 @@ namespace Server.Models
 
 
 
-        public const string REQ_P2PConnection = "P2PConnection";
+        public const string REQ_P2PConnectionEstablished = "P2PConnectionEstablished";
     }
 }

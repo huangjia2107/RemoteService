@@ -28,19 +28,19 @@ namespace Server.Core
             StartListening();
         }
 
-        #region Privare
+        #region Private
 
         private void ConfigGlobalConnectionHandler()
         {
-            NetworkComms.AppendGlobalConnectionEstablishHandler(conn => HandleConnectionEstablish(conn));
+            NetworkComms.AppendGlobalConnectionEstablishHandler(HandleConnectionEstablish);
 
             //finish client info
-            NetworkComms.AppendGlobalIncomingPacketHandler<ClientInfo>(PacketType.REQ_ClientInfo, (header, conn, clientInfo) => HandleClientInfo(header, conn, clientInfo));
+            NetworkComms.AppendGlobalIncomingPacketHandler<ClientInfo>(PacketType.REQ_ClientInfo, HandleClientInfo);
 
             //request p2p connection with specified client
-            NetworkComms.AppendGlobalIncomingPacketHandler<P2PRequest>(PacketType.REQ_P2PRequest, (header, conn, p2pClient) => HandleP2PRequest(header, conn, p2pClient));
+            NetworkComms.AppendGlobalIncomingPacketHandler<P2PRequest>(PacketType.REQ_P2PRequest, HandleP2PRequest);
 
-            NetworkComms.AppendGlobalConnectionCloseHandler(conn => HandleConnectionClose(conn));
+            NetworkComms.AppendGlobalConnectionCloseHandler(HandleConnectionClose);
         }
 
         private void StartListening()

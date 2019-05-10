@@ -18,7 +18,7 @@ namespace Server.Core
                                                  .Select(cs => new ClientInfo { Guid = cs.Guid, Name = cs.Name, CanAccess = cs.CanAccess })
                                                  .ToArray();
 
-            if (clientShares != null && clientShares.Length > 0)
+            if (clientShares != null)
             {
                 var ipPort = (IPEndPoint)clientSession.Connection.ConnectionInfo.RemoteEndPoint;
                 ConsoleHelper.Info(string.Format("Sync shared client info to {0}:{1}({2})", ipPort.Address, ipPort.Port, clientSession.Name));
@@ -29,9 +29,6 @@ namespace Server.Core
 
         private void SyncSharedClients()
         {
-            if (_clientSessionList.Count < 2)
-                return;
-
             _clientSessionList.ForEach(cs => SyncSharedClients(cs));
         } 
     }

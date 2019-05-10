@@ -12,16 +12,21 @@ namespace Client.Core
 {
     partial class ClientCore
     {
-        public void SendLocalClientInfo()
+        private void SendLocalClientInfo()
         {
             _mainConnection.SendObject<ClientInfo>(PacketType.REQ_ClientInfo, _localClientInfo);
         }
 
-        public void RequestP2P(string guid)
+        private void RequestTempConnectionToServer(string targetGuid)
         {
-            //P2P connection
-            _p2pConnection = TCPConnection.GetConnection(new ConnectionInfo(ServerIP, ServerPort));
-            _p2pConnection.AppendIncomingPacketHandler<string>(PacketType.REQ_ConnectionEstablished, (header, conn, msg) => HandleP2PConnectionEstablished(conn, guid));
+            _tempConnection = TCPConnection.GetConnection(new ConnectionInfo(ServerIP, ServerPort));
+            _tempConnection.AppendIncomingPacketHandler<string>(PacketType.REQ_ConnectionEstablished, (header, conn, msg) => HandleTempConnectionEstablished(conn, targetGuid));
+            _tempConnection.AppendShutdownHandler(HandleConnectionShutdown);
+        }
+
+        public void RequestP2PConnection(string targetGuid)
+        {
+            RequestTempConnectionToServer(targetGuid);
         }
     }
 }
