@@ -13,11 +13,15 @@ namespace Client.Core
     {
         private const string ServerIP = "127.0.0.1";
         private const int ServerPort = 6666;
+        private const int ServerP2PPort = 8888;
 
+        public Action<IEnumerable<ClientInfo>> ClientInfoListChangedAction { get; set; }
+        public Action<string> ServerMessageReceivedAction { get; set; }
+        public Action<string> P2PMessageReceivedAction { get; set; }
 
         private readonly List<ClientInfo> _clientInfoList = null;
 
-        private ClientInfo _localClientInfo = null;
+        public ClientInfo LocalClientInfo { get; set; }
 
         private Connection _mainConnection = null;
         private Connection _p2pConnection = null;
@@ -25,10 +29,12 @@ namespace Client.Core
 
         private ConnectionListenerBase _p2pListener = null;
 
+        private bool _isP2PSource = false;
+
         public ClientCore()
         {
             _clientInfoList = new List<ClientInfo>();
-            _localClientInfo = new ClientInfo { Guid = Guid.NewGuid().ToString(), Name = "Client" + DateTime.Now.ToString("fff"), CanAccess = true };
+            LocalClientInfo = new ClientInfo { Guid = Guid.NewGuid().ToString(), Name = "Client" + DateTime.Now.ToString("fff"), CanAccess = true };
         }
 
         public void Start()

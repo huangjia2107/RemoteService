@@ -14,19 +14,25 @@ namespace Client.Core
     {
         private void SendLocalClientInfo()
         {
-            _mainConnection.SendObject<ClientInfo>(PacketType.REQ_ClientInfo, _localClientInfo);
+            ServerMessageReceivedAction("Send self info and request online client info list");
+            _mainConnection.SendObject<ClientInfo>(PacketType.REQ_ClientInfo, LocalClientInfo);
         }
 
         private void RequestTempConnectionToServer(string targetGuid)
         {
-            _tempConnection = TCPConnection.GetConnection(new ConnectionInfo(ServerIP, ServerPort));
+            ServerMessageReceivedAction("Start temp connection to server for P2P"); 
+
+            _tempConnection = TCPConnection.GetConnection(new ConnectionInfo(ServerIP, ServerP2PPort));
             _tempConnection.AppendIncomingPacketHandler<string>(PacketType.REQ_ConnectionEstablished, (header, conn, msg) => HandleTempConnectionEstablished(conn, targetGuid));
             _tempConnection.AppendShutdownHandler(HandleConnectionShutdown);
         }
 
         public void RequestP2PConnection(string targetGuid)
         {
+            _isP2PSource = true;
             RequestTempConnectionToServer(targetGuid);
         }
+
+       
     }
 }

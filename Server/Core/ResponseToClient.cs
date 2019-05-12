@@ -21,7 +21,7 @@ namespace Server.Core
             if (clientShares != null)
             {
                 var ipPort = (IPEndPoint)clientSession.Connection.ConnectionInfo.RemoteEndPoint;
-                ConsoleHelper.Info(string.Format("Sync shared client info to {0}:{1}({2})", ipPort.Address, ipPort.Port, clientSession.Name));
+                ConsoleHelper.Info(string.Format("Send online client info list to {0}:{1}({2})", ipPort.Address, ipPort.Port, clientSession.Name));
 
                 clientSession.Connection.SendObject<ClientInfo[]>(PacketType.REQ_SyncClientInfoList, clientShares);
             }

@@ -8,6 +8,7 @@ using Server.Config;
 using Server.Models;
 using System.Net;
 using NetworkCommsDotNet.Connections;
+using NetworkCommsDotNet.Connections.TCP;
 
 namespace Server.Core
 {
@@ -45,12 +46,30 @@ namespace Server.Core
 
         private void StartListening()
         {
-            var listenings = Connection.StartListening(ConnectionType.TCP, new IPEndPoint(IPAddress.Parse(_serverConfig.IP), _serverConfig.Port));
+            var listenings = new List<ConnectionListenerBase>
+            {
+                new TCPConnectionListener(NetworkComms.DefaultSendReceiveOptions, ApplicationLayerProtocolStatus.Enabled),
+                new TCPConnectionListener(NetworkComms.DefaultSendReceiveOptions, ApplicationLayerProtocolStatus.Enabled)
+            };
 
-            if (listenings != null && listenings.Count > 0 && listenings[0].IsListening)
-                ConsoleHelper.Info(string.Format("Start listening on {0}:{1}", _serverConfig.IP, _serverConfig.Port));
-            else
-                ConsoleHelper.Error(string.Format("Fail listening on {0}:{1}", _serverConfig.IP, _serverConfig.Port));
+            var ipEndPoints = new List<IPEndPoint>
+            {
+                new IPEndPoint(IPAddress.Parse(_serverConfig.IP), _serverConfig.Port),
+                new IPEndPoint(IPAddress.Parse(_serverConfig.IP), _serverConfig.P2P_Port)
+            };
+
+            Connection.StartListening<IPEndPoint>(listenings, ipEndPoints, false);
+
+            //var listenings = Connection.StartListening(ConnectionType.TCP, new IPEndPoint(IPAddress.Parse(_serverConfig.IP), _serverConfig.Port));
+
+            foreach(var listening in listenings)
+            {
+                if(listening.IsListening)
+                {
+                    var ipEndPoint = (IPEndPoint)listening.LocalListenEndPoint;
+                    ConsoleHelper.Info(string.Format("Start listening on {0}:{1}", ipEndPoint.Address, ipEndPoint.Port));
+                }
+            }
         }
 
         private ClientSession ExistClient(EndPoint remoteEndPoint)

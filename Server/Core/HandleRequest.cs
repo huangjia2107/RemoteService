@@ -89,11 +89,11 @@ namespace Server.Core
                 return;
 
             var ipEndPoint = (IPEndPoint)connection.ConnectionInfo.RemoteEndPoint;
-            ConsoleHelper.Warn(string.Format("{0}:{1} has been disconnected", ipEndPoint.Address, ipEndPoint.Port));
-
             var clientInfo = ExistClient(ipEndPoint);
             if (clientInfo != null)
                 _clientSessionList.Remove(clientInfo);
+
+            ConsoleHelper.Warn(string.Format("{0}:{1} has been disconnected, current online {2}", ipEndPoint.Address, ipEndPoint.Port, _clientSessionList.Count));
 
             //Sync shared client list to all client
             SyncSharedClients();

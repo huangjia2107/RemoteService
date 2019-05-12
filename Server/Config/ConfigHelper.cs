@@ -22,6 +22,7 @@ namespace Server.Config
             {
                 IP = "127.0.0.1",
                 Port = 6666,
+                P2P_Port = 8888
             };
         }
     }
