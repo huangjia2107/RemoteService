@@ -1,7 +1,4 @@
-﻿using Client.Core;
-using Client.Models;
-using Server.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -16,6 +13,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ClientCore;
+using Client.Models;
+using Server.Models;
 
 namespace Client
 {
@@ -24,14 +24,14 @@ namespace Client
     /// </summary>
     public partial class MainWindow : Window
     {
-        ClientCore _clientCore = null;
+        OneServerCore _clientCore = null;
         ClientModel _clientModel = null;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            _clientCore = new ClientCore();
+            _clientCore = new OneServerCore();
             this.Title = _clientCore.LocalClientInfo.Name;
 
             _clientCore.ClientInfoListChangedAction = ClientInfoListChanged;
@@ -72,12 +72,14 @@ namespace Client
             if (this.CheckAccess())
             {
                 _clientModel.ServerCommunities.Add(string.Format("{0} {1}",DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss,fff"), message));
+                ServerScrollViewer.ScrollToBottom();
             }
             else
             {
                 this.Dispatcher.Invoke((Action)(() =>
                 {
                     _clientModel.ServerCommunities.Add(string.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss,fff"), message));
+                    ServerScrollViewer.ScrollToBottom();
                 }));
             }
         }
@@ -87,12 +89,14 @@ namespace Client
             if (this.CheckAccess())
             {
                 _clientModel.P2PCommunities.Add(string.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss,fff"), message));
+                P2PScrollViewer.ScrollToBottom();
             }
             else
             {
                 this.Dispatcher.Invoke((Action)(() =>
                 {
                     _clientModel.P2PCommunities.Add(string.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss,fff"), message));
+                    P2PScrollViewer.ScrollToBottom();
                 }));
             }
         }
@@ -116,6 +120,11 @@ namespace Client
                     _clientCore.RequestP2PConnection(_clientModel.SelectedClient.Guid);
                 });
             }
+        }
+
+        private void Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            _clientCore.RefreshOnlieClients();
         }
     }
 }

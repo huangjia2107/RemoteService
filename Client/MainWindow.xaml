@@ -20,7 +20,7 @@
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Clients" FontSize="15" VerticalAlignment="Center"/>
-                <Button Grid.Column="2" Width="60" Height="30" Content="Refresh"/>
+                <Button Grid.Column="2" Width="60" Height="30" Content="Refresh" Click="Refresh_Click" />
             </Grid>
             <ListBox Grid.Row="1" 
                      BorderBrush="{x:Null}" Background="{x:Null}"
@@ -49,7 +49,7 @@
                 <TextBlock Text="Server" FontSize="15" VerticalAlignment="Center" Margin="10,0,0,0"/>
                 <Button Grid.Column="2" Width="60" Height="30" Content="Clear" Margin="0,0,10,0" Click="ClearServer_Click"/>
             </Grid>
-            <ScrollViewer Grid.Row="1">
+            <ScrollViewer Grid.Row="1" x:Name="ServerScrollViewer">
                 <ItemsControl ItemsSource="{Binding ServerCommunities}"/>
             </ScrollViewer>
             
@@ -66,7 +66,7 @@
                 <Button Grid.Column="3" Width="60" Height="30" Content="Connect" Margin="0,0,10,0"
                         Click="Connect_Click"/>
             </Grid>
-            <ScrollViewer Grid.Row="3">
+            <ScrollViewer Grid.Row="3" x:Name="P2PScrollViewer">
                 <ItemsControl ItemsSource="{Binding P2PCommunities}"/>
             </ScrollViewer>
         </Grid>

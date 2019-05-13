@@ -7,7 +7,7 @@ using System.Text;
 namespace Server.Models
 {
     [ProtoContract]
-    class ClientInfo
+    public class ClientInfo
     {
         [ProtoMember(1)]
         public string Guid { get; set; }
@@ -18,16 +18,16 @@ namespace Server.Models
     }
 
     [ProtoContract]
-    class P2PRequest
+    public class P2PRequest
     {
         [ProtoMember(1)]
-        public string FromGuid { get; set; }
+        public string SourceGuid { get; set; }
         [ProtoMember(2)]
-        public string ToGuid { get; set; }
+        public string TargetGuid { get; set; }
     }
 
     [ProtoContract]
-    class P2PClient
+    public class P2PClient
     {
         [ProtoMember(1)]
         public string GUID { get; set; }

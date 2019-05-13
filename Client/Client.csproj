@@ -43,9 +43,6 @@
     <OutputPath>bin\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NetworkCommsDotNetComplete">
-      <HintPath>..\Libs\NetworkCommsDotNetComplete.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -66,20 +63,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="..\Server\Models\Community.cs">
-      <Link>Models\Community.cs</Link>
-    </Compile>
-    <Compile Include="..\Server\Models\PacketType.cs">
-      <Link>Models\PacketType.cs</Link>
-    </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Core\ClientCore.cs" />
-    <Compile Include="Core\HandleP2PResponse.cs" />
-    <Compile Include="Core\HandleResponse.cs" />
-    <Compile Include="Core\RequestToServer.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -110,7 +97,12 @@
     </None>
     <AppDesigner Include="Properties\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\ClientCore\ClientCore.csproj">
+      <Project>{4C1C48F5-4D2D-497E-9B21-0F2C04C12811}</Project>
+      <Name>ClientCore</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

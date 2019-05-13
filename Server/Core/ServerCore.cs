@@ -38,8 +38,17 @@ namespace Server.Core
             //finish client info
             NetworkComms.AppendGlobalIncomingPacketHandler<ClientInfo>(PacketType.REQ_ClientInfo, HandleClientInfo);
 
+            //request online client infos
+            NetworkComms.AppendGlobalIncomingPacketHandler<string>(PacketType.REQ_OnlineClientInfos, HandleOnlineClientInfos);
+
             //request p2p connection with specified client
             NetworkComms.AppendGlobalIncomingPacketHandler<P2PRequest>(PacketType.REQ_P2PRequest, HandleP2PRequest);
+
+            //feedback established p2p connection with specified client
+            NetworkComms.AppendGlobalIncomingPacketHandler<P2PRequest>(PacketType.REQ_P2PEstablished, HandleP2PEstablished);
+
+            //feedback fail p2p connection with specified client
+            NetworkComms.AppendGlobalIncomingPacketHandler<P2PRequest>(PacketType.REQ_P2PFailed, HandleP2PFailed);
 
             NetworkComms.AppendGlobalConnectionCloseHandler(HandleConnectionClose);
         }
@@ -59,15 +68,15 @@ namespace Server.Core
             };
 
             Connection.StartListening<IPEndPoint>(listenings, ipEndPoints, false);
-
-            //var listenings = Connection.StartListening(ConnectionType.TCP, new IPEndPoint(IPAddress.Parse(_serverConfig.IP), _serverConfig.Port));
-
-            foreach(var listening in listenings)
+            foreach (var listening in listenings)
             {
-                if(listening.IsListening)
+                if (listening.IsListening)
                 {
                     var ipEndPoint = (IPEndPoint)listening.LocalListenEndPoint;
-                    ConsoleHelper.Info(string.Format("Start listening on {0}:{1}", ipEndPoint.Address, ipEndPoint.Port));
+                    if (ipEndPoint.Port == _serverConfig.Port)
+                        ConsoleHelper.Info(string.Format("[ Main ] Start Main server listening on {0}:{1}", ipEndPoint.Address, ipEndPoint.Port));
+                    else
+                        ConsoleHelper.Info(string.Format("[ P2P  ] Start P2P server listening on {0}:{1}", ipEndPoint.Address, ipEndPoint.Port));
                 }
             }
         }
