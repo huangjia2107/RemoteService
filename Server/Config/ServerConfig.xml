@@ -1,4 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Server>
-  
-</Server>
+<ServerConfig>
+  <IP>192.168.24.22</IP>
+  <Port>6666</Port>
+  <P2P_Port>8888</P2P_Port>
+</ServerConfig>

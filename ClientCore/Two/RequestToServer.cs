@@ -7,6 +7,7 @@ using NetworkCommsDotNet.Connections;
 using System.Net;
 using NetworkCommsDotNet.Connections.TCP;
 using NetworkCommsDotNet;
+using ClientCore.Interface;
 
 namespace ClientCore
 {
@@ -40,7 +41,7 @@ namespace ClientCore
         {
             ServerMessageReceivedAction("Start connection to P2P server");
 
-            _tempConnection = TCPConnection.GetConnection(new ConnectionInfo(ServerIP, ServerP2PPort));
+            _tempConnection = TCPConnection.GetConnection(new ConnectionInfo(_serverConfig.IP, _serverConfig.P2P_Port));
             if (_tempConnection.ConnectionInfo.ConnectionState == ConnectionState.Established)
             {
                 InnerRequestP2PConnection(targetGuid);

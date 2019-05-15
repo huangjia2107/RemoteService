@@ -15,7 +15,7 @@ namespace Server
         {
             ThreadPool.QueueUserWorkItem(state =>
             {
-                var serverConfig = ConfigHelper.Instance().GetServerConfig();
+                var serverConfig = ConfigHelper<ServerConfig>.Instance().GetServerConfig();
                 try
                 {
                     (new ServerCore(serverConfig)).Start();

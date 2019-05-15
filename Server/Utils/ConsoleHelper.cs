@@ -8,6 +8,8 @@ namespace Server.Utils
 {
     static class ConsoleHelper
     {
+        private static int Raw = 0;
+
         public static void Mark(string message)
         {
             PrintMessage(MessageType.Mark, message);
@@ -43,9 +45,16 @@ namespace Server.Utils
                     break;
             }
 
+            if (Raw == 100)
+            {
+                Console.Clear();
+                Raw = 0;
+            }
+
+            Raw++;
             Console.WriteLine(string.Format("{0} {1} {2}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss,fff"), type, message));
 
-            Console.ResetColor();
+            Console.ResetColor(); 
         }
     }
 }

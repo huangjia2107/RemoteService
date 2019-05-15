@@ -30,6 +30,14 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <PlatformTarget>x86</PlatformTarget>
+    <OutputPath>bin\x86\Release\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="NetworkCommsDotNetComplete">
       <HintPath>..\Libs\NetworkCommsDotNetComplete.dll</HintPath>
@@ -42,12 +50,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Server\Config\ConfigHelper.cs">
+      <Link>Config\ConfigHelper.cs</Link>
+    </Compile>
     <Compile Include="..\server\models\Community.cs">
       <Link>Models\Community.cs</Link>
     </Compile>
     <Compile Include="..\server\models\PacketType.cs">
       <Link>Models\PacketType.cs</Link>
     </Compile>
+    <Compile Include="Config\ServerConfig.cs" />
+    <Compile Include="Interface\IClientCore.cs" />
     <Compile Include="One\HandleP2PResponse.cs" />
     <Compile Include="One\HandleResponse.cs" />
     <Compile Include="One\OneServerCore.cs" />
@@ -57,6 +70,11 @@
     <Compile Include="Two\RequestToServer.cs" />
     <Compile Include="Two\TwoServerCore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Config\ServerConfig.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

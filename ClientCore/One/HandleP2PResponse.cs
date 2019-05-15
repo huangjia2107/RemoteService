@@ -8,6 +8,7 @@ using System.Diagnostics;
 using Server.Models;
 using NetworkCommsDotNet;
 using NetworkCommsDotNet.Connections.TCP;
+using ClientCore.Interface;
 
 namespace ClientCore
 {

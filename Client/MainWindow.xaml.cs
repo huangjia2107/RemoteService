@@ -24,21 +24,19 @@ namespace Client
     /// </summary>
     public partial class MainWindow : Window
     {
-        OneServerCore _clientCore = null;
         ClientModel _clientModel = null;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            _clientCore = new OneServerCore();
-            this.Title = _clientCore.LocalClientInfo.Name;
-
-            _clientCore.ClientInfoListChangedAction = ClientInfoListChanged;
-            _clientCore.ServerMessageReceivedAction = ServerMessageRecieved;
-            _clientCore.P2PMessageReceivedAction = P2PMessageRecieved;
-
             _clientModel = new ClientModel();
+
+            _clientModel.ClientCore.ClientInfoListChangedAction = ClientInfoListChanged;
+            _clientModel.ClientCore.ServerMessageReceivedAction = ServerMessageRecieved;
+            _clientModel.ClientCore.P2PMessageReceivedAction = P2PMessageRecieved;
+
+            this.Title = _clientModel.ClientCore.LocalClientInfo.Name;
             this.DataContext = _clientModel;
 
             Start();
@@ -48,7 +46,7 @@ namespace Client
         {
             ThreadPool.QueueUserWorkItem(state =>
             {
-                _clientCore.Start();
+                _clientModel.ClientCore.Start();
             });
         }
 
@@ -72,14 +70,14 @@ namespace Client
             if (this.CheckAccess())
             {
                 _clientModel.ServerCommunities.Add(string.Format("{0} {1}",DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss,fff"), message));
-                ServerScrollViewer.ScrollToBottom();
+                StatusControl.ServerScrollViewer.ScrollToBottom();
             }
             else
             {
                 this.Dispatcher.Invoke((Action)(() =>
                 {
                     _clientModel.ServerCommunities.Add(string.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss,fff"), message));
-                    ServerScrollViewer.ScrollToBottom();
+                    StatusControl.ServerScrollViewer.ScrollToBottom();
                 }));
             }
         }
@@ -89,42 +87,16 @@ namespace Client
             if (this.CheckAccess())
             {
                 _clientModel.P2PCommunities.Add(string.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss,fff"), message));
-                P2PScrollViewer.ScrollToBottom();
+                StatusControl.P2PScrollViewer.ScrollToBottom();
             }
             else
             {
                 this.Dispatcher.Invoke((Action)(() =>
                 {
                     _clientModel.P2PCommunities.Add(string.Format("{0} {1}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss,fff"), message));
-                    P2PScrollViewer.ScrollToBottom();
+                    StatusControl.P2PScrollViewer.ScrollToBottom();
                 }));
             }
-        }
-
-        private void ClearServer_Click(object sender, RoutedEventArgs e)
-        {
-            _clientModel.ServerCommunities.Clear();
-        }
-
-        private void ClearP2P_Click(object sender, RoutedEventArgs e)
-        {
-            _clientModel.P2PCommunities.Clear();
-        }
-
-        private void Connect_Click(object sender, RoutedEventArgs e)
-        {
-            if (_clientModel.SelectedClient != null)
-            {
-                ThreadPool.QueueUserWorkItem(state =>
-                {
-                    _clientCore.RequestP2PConnection(_clientModel.SelectedClient.Guid);
-                });
-            }
-        }
-
-        private void Refresh_Click(object sender, RoutedEventArgs e)
-        {
-            _clientCore.RefreshOnlieClients();
-        }
+        } 
     }
 }

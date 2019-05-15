@@ -7,6 +7,7 @@ using NetworkCommsDotNet.Connections;
 using System.Net;
 using NetworkCommsDotNet.Connections.TCP;
 using NetworkCommsDotNet;
+using ClientCore.Interface;
 
 namespace ClientCore
 {

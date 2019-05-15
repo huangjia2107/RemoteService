@@ -119,7 +119,7 @@ namespace Server.Core
             if (targetClient == null)
                 return;
 
-            ConsoleHelper.Info(string.Format("[ Main  ] {0} Established P2P connection with {1}", sourceClient.Name, targetClient.Name));
+            ConsoleHelper.Info(string.Format("[ Main ] {0} Established P2P connection with {1}", sourceClient.Name, targetClient.Name));
         }
 
         private void HandleP2PFailed(PacketHeader header, Connection connection, P2PRequest p2pRequest)
@@ -135,7 +135,7 @@ namespace Server.Core
             if (targetClient == null)
                 return;
 
-            ConsoleHelper.Info(string.Format("[ Main  ] {0} failed P2P connection with {1}", sourceClient.Name, targetClient.Name));
+            ConsoleHelper.Info(string.Format("[ Main ] {0} failed P2P connection with {1}", sourceClient.Name, targetClient.Name));
 
             targetClient.Connection.SendObject<string>(PacketType.REQ_P2PFailed, sourceClient.Guid);
         }

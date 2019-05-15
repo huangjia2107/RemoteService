@@ -7,22 +7,22 @@ using NetworkCommsDotNet.Connections;
 using NetworkCommsDotNet;
 using NetworkCommsDotNet.Connections.TCP;
 using System.Net;
+using ClientCore.Config;
+using Server.Config;
+using ClientCore.Interface;
 
 namespace ClientCore
 {
-    public partial class TwoServerCore
-    {
-        private const string ServerIP = "127.0.0.1";
-        private const int ServerPort = 6666;
-        private const int ServerP2PPort = 8888;
-
+    public partial class TwoServerCore : IClientCore
+    {  
         public Action<IEnumerable<ClientInfo>> ClientInfoListChangedAction { get; set; }
         public Action<string> ServerMessageReceivedAction { get; set; }
         public Action<string> P2PMessageReceivedAction { get; set; }
 
-        private readonly List<ClientInfo> _clientInfoList = null;
-
         public ClientInfo LocalClientInfo { get; private set; }
+
+        private readonly List<ClientInfo> _clientInfoList = null;
+        private ServerConfig _serverConfig = null;
 
         //long connection
         private Connection _mainConnection = null;
@@ -39,27 +39,66 @@ namespace ClientCore
 
         public TwoServerCore()
         {
+            _serverConfig = ConfigHelper<ServerConfig>.Instance().GetServerConfig();
             _clientInfoList = new List<ClientInfo>();
+
             LocalClientInfo = new ClientInfo { Guid = Guid.NewGuid().ToString(), Name = "Client" + DateTime.Now.ToString("fff"), CanAccess = true };
+        }
+
+        private bool ResolveDns()
+        {
+            try
+            {
+                var ipHostEntry = Dns.GetHostEntry(_serverConfig.Domain);
+                if (ipHostEntry == null || ipHostEntry.AddressList.Length == 0)
+                {
+                    ServerMessageReceivedAction("Failed to resolve domain = " + _serverConfig.Domain);
+                    return false;
+                }
+
+                ServerMessageReceivedAction("Resolved domain to IP = " + string.Join(" | ", ipHostEntry.AddressList.Select(addr => addr.ToString()).ToArray()));
+                _serverConfig.IP = ipHostEntry.AddressList[ipHostEntry.AddressList.Length - 1].ToString();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                ServerMessageReceivedAction(string.Format("Failed to resolve domain = {0}, Error = {1}", _serverConfig.Domain, ex.Message));
+                return false;
+            }
         }
 
         public void Start()
         {
+            if (!ResolveDns())
+                return;
             ServerMessageReceivedAction("Start connection to Main server");
 
-            NetworkComms.AppendGlobalConnectionCloseHandler(HandleConnectionShutdown);
-
-            _mainConnection = TCPConnection.GetConnection(new ConnectionInfo(ServerIP, ServerPort));
-            if (_mainConnection.ConnectionInfo.ConnectionState == ConnectionState.Established)
+            try
             {
-                _mainConnection.AppendIncomingPacketHandler<ClientInfo[]>(PacketType.REQ_OnlineClientInfos, HandleOnlineClientInfos);
-                _mainConnection.AppendIncomingPacketHandler<P2PClient>(PacketType.REQ_P2PSpecifiedClient, HandleP2PSpecifiedClient);
-                _mainConnection.AppendIncomingPacketHandler<string>(PacketType.REQ_P2PFailed, HandleP2PFailed);
+                _mainConnection = TCPConnection.GetConnection(new ConnectionInfo(_serverConfig.IP, _serverConfig.Port));
+                if (_mainConnection.ConnectionInfo.ConnectionState == ConnectionState.Established)
+                {
+                    NetworkComms.AppendGlobalConnectionCloseHandler(HandleConnectionShutdown);
 
-                SendLocalClientInfo();
+                    _mainConnection.AppendIncomingPacketHandler<ClientInfo[]>(PacketType.REQ_OnlineClientInfos, HandleOnlineClientInfos);
+                    _mainConnection.AppendIncomingPacketHandler<P2PClient>(PacketType.REQ_P2PSpecifiedClient, HandleP2PSpecifiedClient);
+                    _mainConnection.AppendIncomingPacketHandler<string>(PacketType.REQ_P2PFailed, HandleP2PFailed);
+
+                    SendLocalClientInfo();
+                }
+                else
+                {
+                    ServerMessageReceivedAction("Failed connect to Main server");
+
+                    NetworkComms.RemoveGlobalConnectionCloseHandler(HandleConnectionShutdown);
+                    _mainConnection = null;
+                }
             }
-            else
+            catch (Exception ex)
             {
+                ServerMessageReceivedAction("Failed connect to Main server");
+
                 NetworkComms.RemoveGlobalConnectionCloseHandler(HandleConnectionShutdown);
                 _mainConnection = null;
             }
