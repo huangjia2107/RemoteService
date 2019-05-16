@@ -26,6 +26,11 @@ namespace ClientCore
                 //test P2P connection
                 connection.SendObject<string>(PacketType.REQ_P2PEstablished, LocalClientInfo.Guid);
             }
+            else
+            {
+                //for show in server
+                _mainConnection.SendObject<P2PRequest>(PacketType.REQ_P2PEstablished, new P2PRequest { SourceGuid = LocalClientInfo.Guid, TargetGuid = guid });
+            }
         }
     }
 }

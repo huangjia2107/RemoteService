@@ -39,29 +39,38 @@ namespace ClientCore
 
         private void InnerRequestP2PConnection(string targetGuid)
         {
-            var targetClient = _clientInfoList.FirstOrDefault(client => client.Guid == targetGuid);
-            if (targetClient == null)
+            if (_isP2PSource)
             {
-                ServerMessageReceivedAction(string.Format("Not found client named {0}", targetClient.Name));
-                return;
-            }
-
-            var ipEndPoint = (IPEndPoint)_mainConnection.ConnectionInfo.LocalEndPoint;
-            var listenings = Connection.StartListening(ConnectionType.TCP, ipEndPoint);
-
-            if (listenings != null && listenings.Count > 0 && listenings[0].IsListening)
-            {
-                ServerMessageReceivedAction(string.Format("Start P2P connection listening on {0}:{1}", ipEndPoint.Address, ipEndPoint.Port));
-
-                _p2pListener = listenings[0];
-                _p2pListener.AppendIncomingPacketHandler<string>(PacketType.REQ_P2PEstablished, HandleP2PEstablished);
-
-                ServerMessageReceivedAction("Request P2P connection with " + targetClient.Name);
                 _mainConnection.SendObject<P2PRequest>(PacketType.REQ_P2PRequest, new P2PRequest { SourceGuid = LocalClientInfo.Guid, TargetGuid = targetGuid });
-                return;
+            }
+            else
+            {
+                var targetClient = _clientInfoList.FirstOrDefault(client => client.Guid == targetGuid);
+                if (targetClient == null)
+                {
+                    ServerMessageReceivedAction(string.Format("1.Not found target client"));
+                    return;
+                }
+
+                var ipEndPoint = (IPEndPoint)_mainConnection.ConnectionInfo.LocalEndPoint;
+                var listenings = Connection.StartListening(ConnectionType.UDP, ipEndPoint);
+
+                if (listenings != null && listenings.Count > 0 && listenings[0].IsListening)
+                {
+                    ServerMessageReceivedAction(string.Format("1.Start P2P connection listening on {0}:{1}", ipEndPoint.Address, ipEndPoint.Port));
+
+                    _p2pListener = listenings[0];
+                    _p2pListener.AppendIncomingPacketHandler<string>(PacketType.REQ_P2PEstablished, HandleP2PEstablished);
+
+                    ServerMessageReceivedAction("2.Request P2P connection with " + targetClient.Name);
+                    _mainConnection.SendObject<P2PRequest>(PacketType.REQ_P2PRequest, new P2PRequest { SourceGuid = LocalClientInfo.Guid, TargetGuid = targetGuid });
+
+                    return;
+                }
+
+                ServerMessageReceivedAction(string.Format("1.Fail P2P connection listening on {0}:{1}", ipEndPoint.Address, ipEndPoint.Port));
             }
 
-            ServerMessageReceivedAction(string.Format("Fail P2P connection listening on {0}:{1}", ipEndPoint.Address, ipEndPoint.Port));
         }
     }
 }

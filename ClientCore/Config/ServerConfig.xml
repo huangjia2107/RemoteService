@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ServerConfig>
-  <Mode>1</Mode>
-  <Domain>rs.amica.com.cn</Domain>
-  <Port>46666</Port>
-  <P2P_Port>46667</P2P_Port>
+  <Mode>2</Mode>
+  <Domain>remote.service</Domain>
+  <Port>6666</Port>
+  <P2P_Port>8888</P2P_Port>
 </ServerConfig>

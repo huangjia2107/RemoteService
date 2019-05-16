@@ -14,7 +14,7 @@ using ClientCore.Interface;
 namespace ClientCore
 {
     public partial class TwoServerCore : IClientCore
-    {  
+    {
         public Action<IEnumerable<ClientInfo>> ClientInfoListChangedAction { get; set; }
         public Action<string> ServerMessageReceivedAction { get; set; }
         public Action<string> P2PMessageReceivedAction { get; set; }
@@ -36,6 +36,7 @@ namespace ClientCore
 
         //if current client is the originator of the P2P connection 
         private bool _isP2PSource = false;
+        private string _targetGuid = null;
 
         public TwoServerCore()
         {
@@ -72,6 +73,7 @@ namespace ClientCore
         {
             if (!ResolveDns())
                 return;
+
             ServerMessageReceivedAction("Start connection to Main server");
 
             try
@@ -82,6 +84,7 @@ namespace ClientCore
                     NetworkComms.AppendGlobalConnectionCloseHandler(HandleConnectionShutdown);
 
                     _mainConnection.AppendIncomingPacketHandler<ClientInfo[]>(PacketType.REQ_OnlineClientInfos, HandleOnlineClientInfos);
+                    _mainConnection.AppendIncomingPacketHandler<string>(PacketType.REQ_UDPInfo, HandleUDPInfo);
                     _mainConnection.AppendIncomingPacketHandler<P2PClient>(PacketType.REQ_P2PSpecifiedClient, HandleP2PSpecifiedClient);
                     _mainConnection.AppendIncomingPacketHandler<string>(PacketType.REQ_P2PFailed, HandleP2PFailed);
 
@@ -110,12 +113,12 @@ namespace ClientCore
             if (_p2pListener != null && _p2pListener.IsListening)
             {
                 var ipEndPoint = (IPEndPoint)_p2pListener.LocalListenEndPoint;
-                ServerMessageReceivedAction(string.Format("Stop local P2P connection listening on {0}:{1}", ipEndPoint.Address, ipEndPoint.Port));
+                ServerMessageReceivedAction(string.Format("Stop local P2P listening on {0}:{1}", ipEndPoint.Address, ipEndPoint.Port));
 
                 _p2pListener.RemoveIncomingPacketHandler();
                 Connection.StopListening(_p2pListener);
                 _p2pListener = null;
             }
-        } 
+        }
     }
 }

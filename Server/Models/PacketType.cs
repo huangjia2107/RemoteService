@@ -10,6 +10,8 @@ namespace Server.Models
         public const string REQ_ClientInfo = "ClientInfo";
         public const string REQ_OnlineClientInfos = "OnlineClientInfos";
 
+        public const string REQ_UDPInfo = "UDPInfo";
+
         public const string REQ_P2PRequest = "P2PRequest";
         public const string REQ_P2PSpecifiedClient = "P2PSpecifiedClient";
 

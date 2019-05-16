@@ -9,6 +9,7 @@ using Server.Models;
 using System.Net;
 using NetworkCommsDotNet.Connections;
 using NetworkCommsDotNet.Connections.TCP;
+using NetworkCommsDotNet.Connections.UDP;
 
 namespace Server.Core
 {
@@ -41,6 +42,9 @@ namespace Server.Core
             //request online client infos
             NetworkComms.AppendGlobalIncomingPacketHandler<string>(PacketType.REQ_OnlineClientInfos, HandleOnlineClientInfos);
 
+            //request online client infos
+            NetworkComms.AppendGlobalIncomingPacketHandler<string>(PacketType.REQ_UDPInfo, HandleUDPInfo);
+
             //request p2p connection with specified client
             NetworkComms.AppendGlobalIncomingPacketHandler<P2PRequest>(PacketType.REQ_P2PRequest, HandleP2PRequest);
 
@@ -58,7 +62,7 @@ namespace Server.Core
             var listenings = new List<ConnectionListenerBase>
             {
                 new TCPConnectionListener(NetworkComms.DefaultSendReceiveOptions, ApplicationLayerProtocolStatus.Enabled),
-                new TCPConnectionListener(NetworkComms.DefaultSendReceiveOptions, ApplicationLayerProtocolStatus.Enabled)
+                new UDPConnectionListener(NetworkComms.DefaultSendReceiveOptions, ApplicationLayerProtocolStatus.Enabled, UDPOptions.None)
             };
 
             var ipEndPoints = new List<IPEndPoint>
@@ -73,10 +77,10 @@ namespace Server.Core
                 if (listening.IsListening)
                 {
                     var ipEndPoint = (IPEndPoint)listening.LocalListenEndPoint;
-                    if (ipEndPoint.Port == _serverConfig.Port)
-                        ConsoleHelper.Info(string.Format("[ Main ] Start Main server listening on {0}:{1}", ipEndPoint.Address, ipEndPoint.Port));
+                    if (listening.ConnectionType == ConnectionType.TCP)
+                        ConsoleHelper.Info(string.Format("[ TCP ] Start Main server listening on {0}:{1}", ipEndPoint.Address, ipEndPoint.Port));
                     else
-                        ConsoleHelper.Info(string.Format("[ P2P  ] Start P2P server listening on {0}:{1}", ipEndPoint.Address, ipEndPoint.Port));
+                        ConsoleHelper.Info(string.Format("[ UDP ] Start P2P server listening on {0}:{1}", ipEndPoint.Address, ipEndPoint.Port));
                 }
             }
         }

@@ -21,7 +21,7 @@ namespace Server.Core
             if (onlineClients != null)
             {
                 var ipPort = (IPEndPoint)clientSession.Connection.ConnectionInfo.RemoteEndPoint;
-                ConsoleHelper.Info(string.Format("[ Main ] Send online client info list to {0}:{1}({2})", ipPort.Address, ipPort.Port, clientSession.Name));
+                ConsoleHelper.Info(string.Format("[ TCP ] Send online client info list to {0}:{1}({2})", ipPort.Address, ipPort.Port, clientSession.Name));
 
                 clientSession.Connection.SendObject<ClientInfo[]>(PacketType.REQ_OnlineClientInfos, onlineClients);
             }
