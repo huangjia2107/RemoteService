@@ -22,8 +22,8 @@ namespace Server.Core
 
             if (connection.ConnectionInfo.ConnectionType == ConnectionType.TCP)
                 ConsoleHelper.Mark(string.Format("[ TCP ] {0}:{1} has been successfully connected", remoteEndPoint.Address, remoteEndPoint.Port));
-            else
-                ConsoleHelper.Mark(string.Format("[ UDP ] {0}:{1} has been successfully connected", remoteEndPoint.Address, remoteEndPoint.Port));
+//             else
+//                 ConsoleHelper.Mark(string.Format("[ UDP ] {0}:{1} has been successfully connected", remoteEndPoint.Address, remoteEndPoint.Port));
         }
 
         private void HandleClientInfo(PacketHeader header, Connection connection, ClientInfo clientInfo)
@@ -94,7 +94,7 @@ namespace Server.Core
             var ipEndPoint = (IPEndPoint)connection.ConnectionInfo.RemoteEndPoint;
             clientSession.UDPEndPoint = ipEndPoint;
 
-            ConsoleHelper.Info(string.Format("[ UDP ] Received UDP info, NAT Info = {0}:{1}({2})", ipEndPoint.Address, ipEndPoint.Port, clientSession.Name));
+            ConsoleHelper.Mark(string.Format("[ UDP ] Received UDP info, NAT Info = {0}:{1}({2})", ipEndPoint.Address, ipEndPoint.Port, clientSession.Name));
 
             clientSession.Connection.SendObject<string>(PacketType.REQ_UDPInfo, "dddd");
         }

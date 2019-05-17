@@ -7,8 +7,10 @@ using NetworkCommsDotNet.Connections;
 using System.Net;
 using NetworkCommsDotNet.Connections.TCP;
 using NetworkCommsDotNet;
+using NetworkCommsDotNet.Tools;
 using ClientCore.Interface;
 using NetworkCommsDotNet.Connections.UDP;
+using ClientCore.Utils;
 
 namespace ClientCore
 {
@@ -21,7 +23,13 @@ namespace ClientCore
                 _isP2PSource = true;
                 _targetGuid = targetGuid;
 
-                RequestTempConnectionToServer();
+                if (_udpConnection == null)
+                    _udpConnection = CreateLocalUDPConnection();
+
+                if (_udpConnection != null)
+                {
+                    UploadUDPInfo();
+                }
             }
         }
 
@@ -40,20 +48,52 @@ namespace ClientCore
             _mainConnection.SendObject<ClientInfo>(PacketType.REQ_ClientInfo, LocalClientInfo);
         }
 
-        private void RequestTempConnectionToServer()
+        private void UploadUDPInfo()
         {
-            ServerMessageReceivedAction("Start connection to P2P server");
+            ServerMessageReceivedAction("Upload UDP Info to P2P server");
 
-            _tempConnection = UDPConnection.GetConnection(new ConnectionInfo(_serverConfig.IP, _serverConfig.P2P_Port), UDPOptions.None);
-            _tempConnection.AppendIncomingPacketHandler<string>(PacketType.REQ_P2PEstablished, HandleP2PEstablished);
+            SendToIPEndPoint(PacketType.REQ_UDPInfo, LocalClientInfo.Guid, IPAddress.Parse(_serverConfig.IP), _serverConfig.P2P_Port);
+            //(_tempConnection as UDPConnection).SendObject<string>(PacketType.REQ_UDPInfo, LocalClientInfo.Guid, new IPEndPoint(IPAddress.Parse(_serverConfig.IP), _serverConfig.P2P_Port));
 
-            if (_tempConnection.ConnectionInfo.ConnectionState == ConnectionState.Established)
+            // UDPConnection.SendObject<string>(PacketType.REQ_UDPInfo, LocalClientInfo.Guid, new IPEndPoint(IPAddress.Parse(_serverConfig.IP), _serverConfig.P2P_Port), NetworkComms.DefaultSendReceiveOptions, ApplicationLayerProtocolStatus.Enabled);
+            //_tempConnection.SendObject<string>(PacketType.REQ_UDPInfo, LocalClientInfo.Guid);
+        }
+
+        private Connection CreateLocalUDPConnection()
+        {
+            try
             {
-                ServerMessageReceivedAction("Send UDP Info to P2P server");
-                _tempConnection.SendObject<string>(PacketType.REQ_UDPInfo, LocalClientInfo.Guid);
+                var ip = ConnectionHelper.LocalIP();
+                var port = ConnectionHelper.AvailablePort(2000);
+
+                ServerMessageReceivedAction(string.Format("Create local UDP connection, IP = {0}, Port = {1}", ip, port));
+
+                var connectionInfo = new ConnectionInfo(ConnectionType.UDP, ShortGuid.NewGuid(), new IPEndPoint(ip, port), true);
+                var connection = UDPConnection.GetConnection(connectionInfo, UDPOptions.None);
+                //connection.AppendIncomingPacketHandler<string>(PacketType.REQ_P2PEstablished, HandleP2PEstablished);
+
+                return connection;
             }
-            else
-                _tempConnection = null;
-        } 
+            catch (Exception ex)
+            {
+                ServerMessageReceivedAction(ex.Message + ex.StackTrace);
+            }
+
+            return null;
+
+        }
+
+        private void SendToIPEndPoint(string packetType, string message, IPAddress ip, int port)
+        {
+            try
+            {
+                (_udpConnection as UDPConnection).SendObject<string>(packetType, message, new IPEndPoint(ip, port));
+            }
+            catch (Exception ex)
+            {
+                ServerMessageReceivedAction(ex.Message + ex.StackTrace);
+            }
+
+        }
     }
 }

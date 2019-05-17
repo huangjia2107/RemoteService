@@ -27,7 +27,7 @@ namespace ClientCore
         //long connection
         private Connection _mainConnection = null;
         //just for public ip and port
-        private Connection _tempConnection = null;
+        private Connection _udpConnection = null;
 
         //final P2P connection
         private Connection _p2pConnection = null;
@@ -74,6 +74,7 @@ namespace ClientCore
             if (!ResolveDns())
                 return;
 
+            //_serverConfig.IP = "192.168.24.22";
             ServerMessageReceivedAction("Start connection to Main server");
 
             try
@@ -82,6 +83,7 @@ namespace ClientCore
                 if (_mainConnection.ConnectionInfo.ConnectionState == ConnectionState.Established)
                 {
                     NetworkComms.AppendGlobalConnectionCloseHandler(HandleConnectionShutdown);
+                    NetworkComms.AppendGlobalIncomingPacketHandler<string>(PacketType.REQ_P2PEstablished, HandleP2PEstablished);
 
                     _mainConnection.AppendIncomingPacketHandler<ClientInfo[]>(PacketType.REQ_OnlineClientInfos, HandleOnlineClientInfos);
                     _mainConnection.AppendIncomingPacketHandler<string>(PacketType.REQ_UDPInfo, HandleUDPInfo);
