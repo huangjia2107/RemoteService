@@ -115,8 +115,11 @@ namespace Server.Core
             var sourceIPPort = (IPEndPoint)connection.ConnectionInfo.RemoteEndPoint;
             var targetIPPort = (IPEndPoint)targetClient.Connection.ConnectionInfo.RemoteEndPoint;
 
-            ConsoleHelper.Info(string.Format("[ {0} ] {1}:{2}({3}) request P2P connection with {4}{5}({6})",
-                connection.ConnectionInfo.ConnectionType, sourceIPPort.Address, sourceIPPort.Port, sourceClient.Name, targetIPPort.Address, targetIPPort.Port, targetClient.Name));
+            ConsoleHelper.Info(string.Format("[ {0} ] {1}:{2}({3}) request {4}:{5}({6}) P2P to {7}:{8}",
+                connection.ConnectionInfo.ConnectionType,
+                sourceIPPort.Address, sourceIPPort.Port, sourceClient.Name,  
+                targetIPPort.Address, targetIPPort.Port, targetClient.Name,
+                sourceClient.UDPEndPoint.Address, sourceClient.UDPEndPoint.Port));
 
             targetClient.Connection.SendObject<P2PClient>(PacketType.REQ_P2PSpecifiedClient, new P2PClient { GUID = p2pRequest.SourceGuid, IP = sourceClient.UDPEndPoint.Address.ToString(), Port = sourceClient.UDPEndPoint.Port });
         }
