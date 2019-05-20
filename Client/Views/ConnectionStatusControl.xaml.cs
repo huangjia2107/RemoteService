@@ -58,5 +58,10 @@ namespace Client.Views
         {
             _clientModel.ClientCore.RefreshOnlieClients();
         }
+
+        private void TestNAT_Click(object sender, RoutedEventArgs e)
+        {
+            _clientModel.ClientCore.TestNAT();
+        }
     }
 }

@@ -18,6 +18,7 @@ namespace ClientCore.Config
         public string Domain { get; set; }
         public int Port { get; set; }
         public int P2P_Port { get; set; }
+        public int Test_Port { get; set; }
 
         [XmlIgnore]
         public string IP { get; set; }

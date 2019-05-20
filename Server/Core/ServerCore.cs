@@ -42,7 +42,10 @@ namespace Server.Core
             //request online client infos
             NetworkComms.AppendGlobalIncomingPacketHandler<string>(PacketType.REQ_OnlineClientInfos, HandleOnlineClientInfos);
 
-            //request online client infos
+            //request NAT info
+            NetworkComms.AppendGlobalIncomingPacketHandler<string>(PacketType.REQ_NATInfo, HandleNATInfo);
+
+            //refresh and request NAT info
             NetworkComms.AppendGlobalIncomingPacketHandler<string>(PacketType.REQ_UDPInfo, HandleUDPInfo);
 
             //request p2p connection with specified client
@@ -62,13 +65,15 @@ namespace Server.Core
             var listenings = new List<ConnectionListenerBase>
             {
                 new TCPConnectionListener(NetworkComms.DefaultSendReceiveOptions, ApplicationLayerProtocolStatus.Enabled),
-                new UDPConnectionListener(NetworkComms.DefaultSendReceiveOptions, ApplicationLayerProtocolStatus.Enabled, UDPOptions.None)
+                new UDPConnectionListener(NetworkComms.DefaultSendReceiveOptions, ApplicationLayerProtocolStatus.Enabled, UDPOptions.None),
+                new UDPConnectionListener(NetworkComms.DefaultSendReceiveOptions, ApplicationLayerProtocolStatus.Enabled, UDPOptions.None),
             };
 
             var ipEndPoints = new List<IPEndPoint>
             {
                 new IPEndPoint(IPAddress.Parse(_serverConfig.IP), _serverConfig.Port),
-                new IPEndPoint(IPAddress.Parse(_serverConfig.IP), _serverConfig.P2P_Port)
+                new IPEndPoint(IPAddress.Parse(_serverConfig.IP), _serverConfig.P2P_Port),
+                new IPEndPoint(IPAddress.Parse(_serverConfig.IP), _serverConfig.Test_Port),
             };
 
             Connection.StartListening<IPEndPoint>(listenings, ipEndPoints, false);

@@ -4,4 +4,5 @@
   <Domain>remote.service</Domain>
   <Port>6666</Port>
   <P2P_Port>8888</P2P_Port>
+  <Test_Port>9999</Test_Port>
 </ServerConfig>

@@ -13,6 +13,11 @@ namespace ClientCore
 {
     public partial class OneServerCore
     {
+        public void TestNAT()
+        {
+
+        }
+
         public void RequestP2PConnection(string targetGuid)
         {
             if (_mainConnection != null && _mainConnection.ConnectionInfo.ConnectionState == ConnectionState.Established)

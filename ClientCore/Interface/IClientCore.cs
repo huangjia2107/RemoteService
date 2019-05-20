@@ -20,5 +20,7 @@ namespace ClientCore.Interface
         void RequestP2PConnection(string targetGuid);
 
         void RefreshOnlieClients();
+
+        void TestNAT();
     }
 }

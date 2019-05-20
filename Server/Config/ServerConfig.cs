@@ -11,5 +11,6 @@ namespace Server.Config
         public string IP { get; set; }
         public int Port { get; set; }
         public int P2P_Port { get; set; }
+        public int Test_Port { get; set; }
     }
 }

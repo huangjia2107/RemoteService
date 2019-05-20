@@ -48,7 +48,8 @@
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Server" FontSize="15" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                <Button Grid.Column="2" Width="60" Height="30" Content="Clear" Margin="0,0,10,0" Click="ClearServer_Click"/>
+                <Button Grid.Column="2" Width="65" Height="30" Content="Clear" Margin="0,0,10,0" Click="ClearServer_Click"/>
+                <Button Grid.Column="3" Width="65" Height="30" Content="Test NAT" Margin="0,0,10,0" Click="TestNAT_Click"/>
             </Grid>
             <ScrollViewer Grid.Row="1" x:Name="ServerScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                 <ItemsControl ItemsSource="{Binding ServerCommunities}"/>
@@ -62,9 +63,9 @@
                     <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="P2P" FontSize="15" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                <Button Grid.Column="2" Width="60" Height="30" Content="Clear" Margin="0,0,10,0"
+                <Button Grid.Column="2" Width="65" Height="30" Content="Clear" Margin="0,0,10,0"
                         Click="ClearP2P_Click"/>
-                <Button Grid.Column="3" Width="60" Height="30" Content="Connect" Margin="0,0,10,0"
+                <Button Grid.Column="3" Width="65" Height="30" Content="Connect" Margin="0,0,10,0"
                         Click="Connect_Click"/>
             </Grid>
             <ScrollViewer Grid.Row="3" x:Name="P2PScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">

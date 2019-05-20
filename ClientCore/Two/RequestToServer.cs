@@ -16,6 +16,18 @@ namespace ClientCore
 {
     public partial class TwoServerCore
     {
+        public void TestNAT()
+        {
+            if (_mainConnection != null && _mainConnection.ConnectionInfo.ConnectionState == ConnectionState.Established)
+            {
+                if (_udpConnection == null)
+                    _udpConnection = CreateLocalUDPConnection();
+                 
+                SendToIPEndPoint(PacketType.REQ_NATInfo, LocalClientInfo.Guid, IPAddress.Parse(_serverConfig.IP), _serverConfig.P2P_Port);
+                SendToIPEndPoint(PacketType.REQ_NATInfo, LocalClientInfo.Guid, IPAddress.Parse(_serverConfig.IP), _serverConfig.Test_Port);
+            }
+        }
+
         public void RequestP2PConnection(string targetGuid)
         {
             if (_mainConnection != null && _mainConnection.ConnectionInfo.ConnectionState == ConnectionState.Established)
@@ -53,10 +65,6 @@ namespace ClientCore
             ServerMessageReceivedAction("Upload UDP Info to P2P server");
 
             SendToIPEndPoint(PacketType.REQ_UDPInfo, LocalClientInfo.Guid, IPAddress.Parse(_serverConfig.IP), _serverConfig.P2P_Port);
-            //(_tempConnection as UDPConnection).SendObject<string>(PacketType.REQ_UDPInfo, LocalClientInfo.Guid, new IPEndPoint(IPAddress.Parse(_serverConfig.IP), _serverConfig.P2P_Port));
-
-            // UDPConnection.SendObject<string>(PacketType.REQ_UDPInfo, LocalClientInfo.Guid, new IPEndPoint(IPAddress.Parse(_serverConfig.IP), _serverConfig.P2P_Port), NetworkComms.DefaultSendReceiveOptions, ApplicationLayerProtocolStatus.Enabled);
-            //_tempConnection.SendObject<string>(PacketType.REQ_UDPInfo, LocalClientInfo.Guid);
         }
 
         private Connection CreateLocalUDPConnection()

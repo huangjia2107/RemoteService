@@ -22,8 +22,8 @@ namespace Server.Core
 
             if (connection.ConnectionInfo.ConnectionType == ConnectionType.TCP)
                 ConsoleHelper.Mark(string.Format("[ TCP ] {0}:{1} has been successfully connected", remoteEndPoint.Address, remoteEndPoint.Port));
-//             else
-//                 ConsoleHelper.Mark(string.Format("[ UDP ] {0}:{1} has been successfully connected", remoteEndPoint.Address, remoteEndPoint.Port));
+            //             else
+            //                 ConsoleHelper.Mark(string.Format("[ UDP ] {0}:{1} has been successfully connected", remoteEndPoint.Address, remoteEndPoint.Port));
         }
 
         private void HandleClientInfo(PacketHeader header, Connection connection, ClientInfo clientInfo)
@@ -79,6 +79,24 @@ namespace Server.Core
             SendOnlineClients(clientSession);
         }
 
+        private void HandleNATInfo(PacketHeader header, Connection connection, string fromGuid)
+        {
+            if (connection == null || string.IsNullOrEmpty(fromGuid))
+                return;
+
+            var clientSession = _clientSessionList.FirstOrDefault(cs => cs.Guid == fromGuid);
+            if (clientSession == null)
+            {
+                ConsoleHelper.Info("[ UDP ] Report UDP is Established, Not found guid = " + fromGuid);
+                return;
+            }
+
+            var ipEndPoint = (IPEndPoint)connection.ConnectionInfo.RemoteEndPoint;
+
+            ConsoleHelper.Mark(string.Format("[ UDP ] {0} request test NAT, Result = {1}:{2}", clientSession.Name, ipEndPoint.Address, ipEndPoint.Port));
+            clientSession.Connection.SendObject<string>(PacketType.REQ_NATInfo, string.Format("UDP NAT Info = {0}:{1}", ipEndPoint.Address, ipEndPoint.Port));
+        }
+
         private void HandleUDPInfo(PacketHeader header, Connection connection, string fromGuid)
         {
             if (connection == null || string.IsNullOrEmpty(fromGuid))
@@ -95,8 +113,7 @@ namespace Server.Core
             clientSession.UDPEndPoint = ipEndPoint;
 
             ConsoleHelper.Mark(string.Format("[ UDP ] Received UDP info, NAT Info = {0}:{1}({2})", ipEndPoint.Address, ipEndPoint.Port, clientSession.Name));
-
-            clientSession.Connection.SendObject<string>(PacketType.REQ_UDPInfo, "dddd");
+            clientSession.Connection.SendObject<string>(PacketType.REQ_UDPInfo, string.Format("UDP NAT Info = {0}:{1}", ipEndPoint.Address, ipEndPoint.Port));
         }
 
         private void HandleP2PRequest(PacketHeader header, Connection connection, P2PRequest p2pRequest)
@@ -117,7 +134,7 @@ namespace Server.Core
 
             ConsoleHelper.Info(string.Format("[ {0} ] {1}:{2}({3}) request {4}:{5}({6}) P2P to {7}:{8}",
                 connection.ConnectionInfo.ConnectionType,
-                sourceIPPort.Address, sourceIPPort.Port, sourceClient.Name,  
+                sourceIPPort.Address, sourceIPPort.Port, sourceClient.Name,
                 targetIPPort.Address, targetIPPort.Port, targetClient.Name,
                 sourceClient.UDPEndPoint.Address, sourceClient.UDPEndPoint.Port));
 
