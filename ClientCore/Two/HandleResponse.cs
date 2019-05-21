@@ -29,7 +29,7 @@ namespace ClientCore
             if (string.IsNullOrEmpty(message) || connection == null)
                 return;
 
-            ServerMessageReceivedAction(message);
+            ServerMessageReceivedAction(string.Format("Local UDP Info = {0}, {1}", _udpConnection.ConnectionInfo.LocalEndPoint, message));
         }
 
         private void HandleUDPInfo(PacketHeader header, Connection connection, string message)
