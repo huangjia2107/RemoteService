@@ -9,6 +9,7 @@ using NetworkCommsDotNet;
 using Server.Models;
 using NetworkCommsDotNet.Connections.TCP;
 using NetworkCommsDotNet.Connections.UDP;
+using ClientCore.Utils;
 
 namespace ClientCore
 {
@@ -76,6 +77,30 @@ namespace ClientCore
                 if (_udpConnection != null)
                 {
                     ServerMessageReceivedAction(string.Format("Send P2P try string to {0}:{1}({2})", p2pSourceClient.IP, p2pSourceClient.Port, sourceClient.Name));
+
+                    /*
+                    var ports = Enumerable.Range(1025, 64511).ToArray();
+                    CommonHelper.Shuffle(ports);
+
+                    int i = 0;
+                    while (i < 2000)
+                    {
+                        var port = ports[i];
+                        if (port == p2pSourceClient.Port)
+                        {
+                            i++;
+                            continue;
+                        }
+
+                        SendToIPEndPoint(PacketType.REQ_P2PEstablished, LocalClientInfo.Guid, IPAddress.Parse(p2pSourceClient.IP), port);
+
+                        System.Threading.Thread.Sleep(50);
+                        i++;
+                    }
+
+                    ServerMessageReceivedAction("Send P2P try string over");
+                    */
+
                     SendToIPEndPoint(PacketType.REQ_P2PEstablished, LocalClientInfo.Guid, IPAddress.Parse(p2pSourceClient.IP), p2pSourceClient.Port);
 
                     _targetGuid = p2pSourceClient.GUID;
@@ -85,8 +110,31 @@ namespace ClientCore
             else
             {
                 ServerMessageReceivedAction(string.Format("Try P2P to {0}:{1}({2})", p2pSourceClient.IP, p2pSourceClient.Port, sourceClient.Name));
-                SendToIPEndPoint(PacketType.REQ_P2PEstablished, LocalClientInfo.Guid, IPAddress.Parse(p2pSourceClient.IP), p2pSourceClient.Port);
 
+                /*
+                var ports = Enumerable.Range(1025, 64511).ToArray();
+                CommonHelper.Shuffle(ports);
+
+                int i = 0;
+                while (i < 2000)
+                {
+                    var port = ports[i];
+                    if (port == p2pSourceClient.Port)
+                    {
+                        i++;
+                        continue;
+                    }
+
+                    SendToIPEndPoint(PacketType.REQ_P2PEstablished, LocalClientInfo.Guid, IPAddress.Parse(p2pSourceClient.IP), port);
+
+                    System.Threading.Thread.Sleep(50);
+                    i++;
+                }
+
+                ServerMessageReceivedAction("Send P2P over");
+                */
+
+                SendToIPEndPoint(PacketType.REQ_P2PEstablished, LocalClientInfo.Guid, IPAddress.Parse(p2pSourceClient.IP), p2pSourceClient.Port);
                 return;
 
                 _p2pConnection = UDPConnection.GetConnection(new ConnectionInfo(p2pSourceClient.IP, p2pSourceClient.Port), UDPOptions.None);

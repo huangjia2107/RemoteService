@@ -1,0 +1,9 @@
+stun.ideasip.com:3478
+220.181.57.217:46208
+stun.ideasip.com:3478
+217.116.122.138:3479
+220.181.57.217:2732
+
+TTL     https://www.cnblogs.com/awpatp/archive/2010/05/27/1745883.html
+P2P     https://www.cnblogs.com/my_life/articles/1908552.html
+Github  https://github.com/jflyup/nat_traversal

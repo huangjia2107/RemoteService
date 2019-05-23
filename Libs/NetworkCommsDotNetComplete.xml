@@ -1364,6 +1364,11 @@
             Options associated with this UDPConnection
             </summary>
     </member>
+    <member name="P:NetworkCommsDotNet.Connections.UDP.UDPConnection.Ttl">
+      <summary>
+            Gets or sets a value that specifies the Time to Live (TTL) value of Internet Protocol (IP) packets sent by the UdpClient.
+            </summary>
+    </member>
     <member name="T:NetworkCommsDotNet.Connections.UDP.UDPOptions">
       <summary>
             A <see cref="T:NetworkCommsDotNet.Connections.UDP.UDPConnection" /> could support different combinations of features. i.e. From the most basic (None) which 
