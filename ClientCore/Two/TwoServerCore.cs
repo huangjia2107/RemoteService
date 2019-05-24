@@ -10,6 +10,7 @@ using System.Net;
 using ClientCore.Config;
 using Server.Config;
 using ClientCore.Interface;
+using NetworkCommsDotNet.Connections.UDP;
 
 namespace ClientCore
 {
@@ -27,7 +28,7 @@ namespace ClientCore
         //long connection
         private Connection _mainConnection = null;
         //just for public ip and port
-        private Connection _udpConnection = null;
+        private UDPConnection _udpConnection = null;
 
         //final P2P connection
         private Connection _p2pConnection = null;
@@ -74,7 +75,7 @@ namespace ClientCore
             if (!ResolveDns())
                 return;
 
-            //_serverConfig.IP = "192.168.24.22";
+            //_serverConfig.IP = "39.97.185.194";
             ServerMessageReceivedAction("Start connection to Main server");
 
             try

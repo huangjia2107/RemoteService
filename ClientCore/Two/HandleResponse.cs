@@ -78,30 +78,13 @@ namespace ClientCore
                 {
                     ServerMessageReceivedAction(string.Format("Send P2P try string to {0}:{1}({2})", p2pSourceClient.IP, p2pSourceClient.Port, sourceClient.Name));
 
-                    /*
-                    var ports = Enumerable.Range(1025, 64511).ToArray();
-                    CommonHelper.Shuffle(ports);
+                    var ttl = _udpConnection.Ttl;
+                    _udpConnection.Ttl = 3;
 
-                    int i = 0;
-                    while (i < 2000)
-                    {
-                        var port = ports[i];
-                        if (port == p2pSourceClient.Port)
-                        {
-                            i++;
-                            continue;
-                        }
-
-                        SendToIPEndPoint(PacketType.REQ_P2PEstablished, LocalClientInfo.Guid, IPAddress.Parse(p2pSourceClient.IP), port);
-
-                        System.Threading.Thread.Sleep(50);
-                        i++;
-                    }
-
-                    ServerMessageReceivedAction("Send P2P try string over");
-                    */
-
+                    //MultiholePunching(p2pSourceClient.IP, p2pSourceClient.Port, 1025, 2000);
                     SendToIPEndPoint(PacketType.REQ_P2PEstablished, LocalClientInfo.Guid, IPAddress.Parse(p2pSourceClient.IP), p2pSourceClient.Port);
+
+                    _udpConnection.Ttl = ttl;
 
                     _targetGuid = p2pSourceClient.GUID;
                     UploadUDPInfo();
@@ -111,30 +94,9 @@ namespace ClientCore
             {
                 ServerMessageReceivedAction(string.Format("Try P2P to {0}:{1}({2})", p2pSourceClient.IP, p2pSourceClient.Port, sourceClient.Name));
 
-                /*
-                var ports = Enumerable.Range(1025, 64511).ToArray();
-                CommonHelper.Shuffle(ports);
-
-                int i = 0;
-                while (i < 2000)
-                {
-                    var port = ports[i];
-                    if (port == p2pSourceClient.Port)
-                    {
-                        i++;
-                        continue;
-                    }
-
-                    SendToIPEndPoint(PacketType.REQ_P2PEstablished, LocalClientInfo.Guid, IPAddress.Parse(p2pSourceClient.IP), port);
-
-                    System.Threading.Thread.Sleep(50);
-                    i++;
-                }
-
-                ServerMessageReceivedAction("Send P2P over");
-                */
-
+                //MultiholePunching(p2pSourceClient.IP, p2pSourceClient.Port, 1025, 2000);
                 SendToIPEndPoint(PacketType.REQ_P2PEstablished, LocalClientInfo.Guid, IPAddress.Parse(p2pSourceClient.IP), p2pSourceClient.Port);
+
                 return;
 
                 _p2pConnection = UDPConnection.GetConnection(new ConnectionInfo(p2pSourceClient.IP, p2pSourceClient.Port), UDPOptions.None);

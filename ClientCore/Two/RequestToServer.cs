@@ -22,7 +22,7 @@ namespace ClientCore
             {
                 if (_udpConnection == null)
                     _udpConnection = CreateLocalUDPConnection();
-                 
+
                 SendToIPEndPoint(PacketType.REQ_NATInfo, LocalClientInfo.Guid, IPAddress.Parse(_serverConfig.IP), _serverConfig.P2P_Port);
                 SendToIPEndPoint(PacketType.REQ_NATInfo, LocalClientInfo.Guid, IPAddress.Parse(_serverConfig.IP), _serverConfig.Test_Port);
             }
@@ -67,7 +67,7 @@ namespace ClientCore
             SendToIPEndPoint(PacketType.REQ_UDPInfo, LocalClientInfo.Guid, IPAddress.Parse(_serverConfig.IP), _serverConfig.P2P_Port);
         }
 
-        private Connection CreateLocalUDPConnection()
+        private UDPConnection CreateLocalUDPConnection()
         {
             try
             {
@@ -95,13 +95,34 @@ namespace ClientCore
         {
             try
             {
-                (_udpConnection as UDPConnection).SendObject<string>(packetType, message, new IPEndPoint(ip, port));
+                _udpConnection.SendObject<string>(packetType, message, new IPEndPoint(ip, port));
             }
             catch (Exception ex)
             {
                 ServerMessageReceivedAction(ex.Message + ex.StackTrace);
             }
 
+        }
+
+        private void MultiholePunching(string targetIP, int targetPort, int startPort, int tryTimes)
+        {
+            var ports = Enumerable.Range(startPort, 65535 - startPort + 1).ToArray();
+            CommonHelper.Shuffle(ports);
+
+            int i = 0;
+            while (i < Math.Min(tryTimes, ports.Length))
+            {
+                var port = ports[i];
+                if (port != targetPort)
+                {
+                    SendToIPEndPoint(PacketType.REQ_P2PEstablished, LocalClientInfo.Guid, IPAddress.Parse(targetIP), port);
+                    System.Threading.Thread.Sleep(50);
+                }
+
+                i++;
+            }
+
+            ServerMessageReceivedAction("Send P2P over");
         }
     }
 }
