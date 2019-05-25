@@ -4,16 +4,17 @@ using System.Linq;
 using System.Text;
 using ClientCore.Config;
 using Server.Models;
+using ClientCore.Models;
 
 namespace ClientCore.Interface
 {
     public interface IClientCore
     {
-        Action<IEnumerable<ClientInfo>> ClientInfoListChangedAction { get; set; }
+        Action<IEnumerable<ClientInfoEx>> ClientInfoListChangedAction { get; set; }
         Action<string> ServerMessageReceivedAction { get; set; }
         Action<string> P2PMessageReceivedAction { get; set; }
 
-        ClientInfo LocalClientInfo { get;}
+        ClientInfoEx LocalClientInfo { get;}
 
         void Start();
 
@@ -22,5 +23,7 @@ namespace ClientCore.Interface
         void RefreshOnlieClients();
 
         void TestNAT();
+
+        void Send(string targetGuid, string message);
     }
 }

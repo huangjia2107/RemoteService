@@ -61,10 +61,7 @@
     </Compile>
     <Compile Include="Config\ServerConfig.cs" />
     <Compile Include="Interface\IClientCore.cs" />
-    <Compile Include="One\HandleP2PResponse.cs" />
-    <Compile Include="One\HandleResponse.cs" />
-    <Compile Include="One\OneServerCore.cs" />
-    <Compile Include="One\RequestToServer.cs" />
+    <Compile Include="Models\ClientInfoEx.cs" />
     <Compile Include="Two\HandleP2PResponse.cs" />
     <Compile Include="Two\HandleResponse.cs" />
     <Compile Include="Two\RequestToServer.cs" />
@@ -72,6 +69,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\CommonHelper.cs" />
     <Compile Include="Utils\ConnectionHelper.cs" />
+    <Compile Include="ViewModels\ViewModelBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\ServerConfig.xml">

@@ -16,21 +16,37 @@ namespace ClientCore
     {
         private void HandleP2PEstablished(PacketHeader header, Connection connection, string guid)
         {
-            var clientInfo = _clientInfoList.FirstOrDefault(client => client.Guid == guid);
+            var clientInfo = _clientInfoList.FirstOrDefault(clientEx => clientEx.Client.Guid == guid);
             var ipEndPoint = (IPEndPoint)connection.ConnectionInfo.RemoteEndPoint;
 
-            P2PMessageReceivedAction(string.Format("Test P2P connection from {0}:{1}({2})", ipEndPoint.Address, ipEndPoint.Port, clientInfo.Name));
+            clientInfo.IP = ipEndPoint.Address.ToString();
+            clientInfo.Port = ipEndPoint.Port;
 
-            if (_p2pListener != null)
+            clientInfo.Established = true;
+
+            P2PMessageReceivedAction(string.Format("[ {0}({1}:{2}) ]: Test P2P connection", clientInfo.Client.Name, ipEndPoint.Address, ipEndPoint.Port));
+
+            if (!_isP2PSource)
             {
                 //test P2P connection
-                connection.SendObject<string>(PacketType.REQ_P2PEstablished, LocalClientInfo.Guid);
+                connection.SendObject<string>(PacketType.REQ_P2PEstablished, LocalClientInfo.Client.Guid);
             }
             else
-            {
+            {  
                 //for show in server
-                _mainConnection.SendObject<P2PRequest>(PacketType.REQ_P2PEstablished, new P2PRequest { SourceGuid = LocalClientInfo.Guid, TargetGuid = guid });
+                _mainConnection.SendObject<P2PRequest>(PacketType.REQ_P2PEstablished, new P2PRequest { SourceGuid = LocalClientInfo.Client.Guid, TargetGuid = guid });
             }
+        }
+
+        private void HandleP2PMessage(PacketHeader header, Connection connection, string message)
+        {
+            var ipEndPoint = (IPEndPoint)connection.ConnectionInfo.RemoteEndPoint;
+            var clientInfo = _clientInfoList.FirstOrDefault(clientEx => clientEx.IP == ipEndPoint.Address.ToString() && clientEx.Port == ipEndPoint.Port);
+            
+            if(clientInfo != null)
+                P2PMessageReceivedAction(string.Format("[ {0}({1}:{2}) ]: {3}", clientInfo.Client.Name, ipEndPoint.Address, ipEndPoint.Port, message));
+            else
+                P2PMessageReceivedAction(string.Format("[ {0}({1}:{2}) ]: {3}", "UnKnown", ipEndPoint.Address, ipEndPoint.Port, message));
         }
     }
 }

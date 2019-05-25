@@ -49,7 +49,7 @@ namespace Client.Views
             {
                 ThreadPool.QueueUserWorkItem(state =>
                 {
-                    _clientModel.ClientCore.RequestP2PConnection(_clientModel.SelectedClient.Guid);
+                    _clientModel.ClientCore.RequestP2PConnection(_clientModel.SelectedClient.Client.Guid);
                 });
             }
         }
@@ -62,6 +62,19 @@ namespace Client.Views
         private void TestNAT_Click(object sender, RoutedEventArgs e)
         {
             _clientModel.ClientCore.TestNAT();
+        }
+
+        private void Send_Click(object sender, RoutedEventArgs e)
+        {
+            if (_clientModel.SelectedClient == null || !_clientModel.SelectedClient.Established)
+                return;
+
+            ThreadPool.QueueUserWorkItem(state =>
+            {
+                _clientModel.ClientCore.Send(_clientModel.SelectedClient.Client.Guid, (string)state);
+            }, MessageTextBox.Text);
+
+            MessageTextBox.Text = string.Empty;
         }
     }
 }

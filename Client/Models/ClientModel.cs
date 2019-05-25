@@ -1,6 +1,4 @@
-﻿using Client.ViewModels;
-using Server.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -9,6 +7,9 @@ using ClientCore;
 using ClientCore.Interface;
 using ClientCore.Config;
 using Server.Config;
+using ClientCore.Models;
+using Server.Models;
+using ClientCore.ViewModels;
 
 namespace Client.Models
 {
@@ -21,26 +22,23 @@ namespace Client.Models
         public ClientModel()
         {
             _serverConfig = ConfigHelper<ServerConfig>.Instance().GetServerConfig();
-            _clientInfoList = new List<ClientInfo>();
-
-            if (_serverConfig.Mode == 1)
-                ClientCore = new OneServerCore();
-            else
-                ClientCore = new TwoServerCore();
+            _clientInfoList = new List<ClientInfoEx>();
+             
+            ClientCore = new TwoServerCore();
 
             ServerCommunities = new ObservableCollection<string>();
             P2PCommunities = new ObservableCollection<string>();
         }
 
-        private ClientInfo _selectedClient;
-        public ClientInfo SelectedClient
+        private ClientInfoEx _selectedClient;
+        public ClientInfoEx SelectedClient
         {
             get { return _selectedClient; }
             set { _selectedClient = value; InvokePropertyChanged("SelectedClient"); }
         }
 
-        private List<ClientInfo> _clientInfoList;
-        public List<ClientInfo> ClientInfoList
+        private List<ClientInfoEx> _clientInfoList;
+        public List<ClientInfoEx> ClientInfoList
         {
             get { return _clientInfoList; }
             set { _clientInfoList = value; InvokePropertyChanged("ClientInfoList"); }

@@ -11,29 +11,25 @@ using ClientCore.Config;
 using Server.Config;
 using ClientCore.Interface;
 using NetworkCommsDotNet.Connections.UDP;
+using ClientCore.Models;
 
 namespace ClientCore
 {
     public partial class TwoServerCore : IClientCore
     {
-        public Action<IEnumerable<ClientInfo>> ClientInfoListChangedAction { get; set; }
+        public Action<IEnumerable<ClientInfoEx>> ClientInfoListChangedAction { get; set; }
         public Action<string> ServerMessageReceivedAction { get; set; }
         public Action<string> P2PMessageReceivedAction { get; set; }
 
-        public ClientInfo LocalClientInfo { get; private set; }
+        public ClientInfoEx LocalClientInfo { get; private set; }
 
-        private readonly List<ClientInfo> _clientInfoList = null;
+        private readonly List<ClientInfoEx> _clientInfoList = null;
         private ServerConfig _serverConfig = null;
 
         //long connection
         private Connection _mainConnection = null;
         //just for public ip and port
-        private UDPConnection _udpConnection = null;
-
-        //final P2P connection
-        private Connection _p2pConnection = null;
-        //local listening for P2P connection
-        private ConnectionListenerBase _p2pListener = null;
+        private UDPConnection _udpConnection = null; 
 
         //if current client is the originator of the P2P connection 
         private bool _isP2PSource = false;
@@ -42,9 +38,9 @@ namespace ClientCore
         public TwoServerCore()
         {
             _serverConfig = ConfigHelper<ServerConfig>.Instance().GetServerConfig();
-            _clientInfoList = new List<ClientInfo>();
+            _clientInfoList = new List<ClientInfoEx>();
 
-            LocalClientInfo = new ClientInfo { Guid = Guid.NewGuid().ToString(), Name = "Client" + DateTime.Now.ToString("fff"), CanAccess = true };
+            LocalClientInfo = new ClientInfoEx(new ClientInfo { Guid = Guid.NewGuid().ToString(), Name = "Client" + DateTime.Now.ToString("fff"), CanAccess = true });
         }
 
         private bool ResolveDns()
@@ -85,6 +81,7 @@ namespace ClientCore
                 {
                     NetworkComms.AppendGlobalConnectionCloseHandler(HandleConnectionShutdown);
                     NetworkComms.AppendGlobalIncomingPacketHandler<string>(PacketType.REQ_P2PEstablished, HandleP2PEstablished);
+                    NetworkComms.AppendGlobalIncomingPacketHandler<string>(PacketType.REQ_P2PMessage, HandleP2PMessage);
 
                     _mainConnection.AppendIncomingPacketHandler<ClientInfo[]>(PacketType.REQ_OnlineClientInfos, HandleOnlineClientInfos);
                     _mainConnection.AppendIncomingPacketHandler<string>(PacketType.REQ_NATInfo, HandleNATInfo);
@@ -109,20 +106,6 @@ namespace ClientCore
                 NetworkComms.RemoveGlobalConnectionCloseHandler(HandleConnectionShutdown);
                 _mainConnection = null;
             }
-        }
-
-        private void StopP2PListening()
-        {
-            //stop local listening
-            if (_p2pListener != null && _p2pListener.IsListening)
-            {
-                var ipEndPoint = (IPEndPoint)_p2pListener.LocalListenEndPoint;
-                ServerMessageReceivedAction(string.Format("Stop local P2P listening on {0}:{1}", ipEndPoint.Address, ipEndPoint.Port));
-
-                _p2pListener.RemoveIncomingPacketHandler();
-                Connection.StopListening(_p2pListener);
-                _p2pListener = null;
-            }
-        }
+        } 
     }
 }

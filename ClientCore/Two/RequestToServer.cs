@@ -23,9 +23,27 @@ namespace ClientCore
                 if (_udpConnection == null)
                     _udpConnection = CreateLocalUDPConnection();
 
-                SendToIPEndPoint(PacketType.REQ_NATInfo, LocalClientInfo.Guid, IPAddress.Parse(_serverConfig.IP), _serverConfig.P2P_Port);
-                SendToIPEndPoint(PacketType.REQ_NATInfo, LocalClientInfo.Guid, IPAddress.Parse(_serverConfig.IP), _serverConfig.Test_Port);
+                SendToIPEndPoint(PacketType.REQ_NATInfo, LocalClientInfo.Client.Guid, IPAddress.Parse(_serverConfig.IP), _serverConfig.P2P_Port);
+                SendToIPEndPoint(PacketType.REQ_NATInfo, LocalClientInfo.Client.Guid, IPAddress.Parse(_serverConfig.IP), _serverConfig.Test_Port);
             }
+        }
+
+        public void Send(string targetGuid, string message)
+        {
+            if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(message.Trim()) 
+                || _mainConnection == null || _mainConnection.ConnectionInfo.ConnectionState != ConnectionState.Established)
+                return;
+
+            var targetClient = _clientInfoList.FirstOrDefault(c => c.Client.Guid == targetGuid && c.Established);
+            if (targetClient == null)
+                return;
+
+            if (_udpConnection == null)
+                _udpConnection = CreateLocalUDPConnection();
+
+            P2PMessageReceivedAction(string.Format("[ {0} ]: {1}", "Local", message));
+
+            SendToIPEndPoint(PacketType.REQ_P2PMessage, message, IPAddress.Parse(targetClient.IP), targetClient.Port);
         }
 
         public void RequestP2PConnection(string targetGuid)
@@ -50,21 +68,21 @@ namespace ClientCore
             if (_mainConnection != null && _mainConnection.ConnectionInfo.ConnectionState == ConnectionState.Established)
             {
                 ServerMessageReceivedAction("Refresh online client info list");
-                _mainConnection.SendObject<string>(PacketType.REQ_OnlineClientInfos, LocalClientInfo.Guid);
+                _mainConnection.SendObject<string>(PacketType.REQ_OnlineClientInfos, LocalClientInfo.Client.Guid);
             }
         }
 
         private void SendLocalClientInfo()
         {
             ServerMessageReceivedAction("Established with Main server, send client info");
-            _mainConnection.SendObject<ClientInfo>(PacketType.REQ_ClientInfo, LocalClientInfo);
+            _mainConnection.SendObject<ClientInfo>(PacketType.REQ_ClientInfo, LocalClientInfo.Client);
         }
 
         private void UploadUDPInfo()
         {
             ServerMessageReceivedAction("Upload UDP Info to P2P server");
 
-            SendToIPEndPoint(PacketType.REQ_UDPInfo, LocalClientInfo.Guid, IPAddress.Parse(_serverConfig.IP), _serverConfig.P2P_Port);
+            SendToIPEndPoint(PacketType.REQ_UDPInfo, LocalClientInfo.Client.Guid, IPAddress.Parse(_serverConfig.IP), _serverConfig.P2P_Port);
         }
 
         private UDPConnection CreateLocalUDPConnection()
@@ -91,11 +109,11 @@ namespace ClientCore
 
         }
 
-        private void SendToIPEndPoint(string packetType, string message, IPAddress ip, int port)
+        private void SendToIPEndPoint<T>(string packetType, T message, IPAddress ip, int port)
         {
             try
             {
-                _udpConnection.SendObject<string>(packetType, message, new IPEndPoint(ip, port));
+                _udpConnection.SendObject<T>(packetType, message, new IPEndPoint(ip, port));
             }
             catch (Exception ex)
             {
@@ -115,7 +133,7 @@ namespace ClientCore
                 var port = ports[i];
                 if (port != targetPort)
                 {
-                    SendToIPEndPoint(PacketType.REQ_P2PEstablished, LocalClientInfo.Guid, IPAddress.Parse(targetIP), port);
+                    SendToIPEndPoint(PacketType.REQ_P2PEstablished, LocalClientInfo.Client.Guid, IPAddress.Parse(targetIP), port);
                     System.Threading.Thread.Sleep(50);
                 }
 

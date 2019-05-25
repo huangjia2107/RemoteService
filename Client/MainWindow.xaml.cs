@@ -14,8 +14,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ClientCore;
-using Client.Models;
+using ClientCore.Models;
 using Server.Models;
+using Client.Models;
 
 namespace Client
 {
@@ -36,7 +37,7 @@ namespace Client
             _clientModel.ClientCore.ServerMessageReceivedAction = ServerMessageRecieved;
             _clientModel.ClientCore.P2PMessageReceivedAction = P2PMessageRecieved;
 
-            this.Title = _clientModel.ClientCore.LocalClientInfo.Name;
+            this.Title = _clientModel.ClientCore.LocalClientInfo.Client.Name;
             this.DataContext = _clientModel;
 
             Start();
@@ -50,17 +51,17 @@ namespace Client
             });
         }
 
-        private void ClientInfoListChanged(IEnumerable<ClientInfo> clientInfoList)
+        private void ClientInfoListChanged(IEnumerable<ClientInfoEx> clientInfoList)
         {
             if(this.CheckAccess())
             {
-                _clientModel.ClientInfoList = new List<ClientInfo>(clientInfoList);
+                _clientModel.ClientInfoList = new List<ClientInfoEx>(clientInfoList);
             }
             else
             {
                 this.Dispatcher.Invoke((Action)(() =>
                 {
-                    _clientModel.ClientInfoList = new List<ClientInfo>(clientInfoList);
+                    _clientModel.ClientInfoList = new List<ClientInfoEx>(clientInfoList);
                 }));
             }
         }

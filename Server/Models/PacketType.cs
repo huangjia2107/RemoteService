@@ -18,6 +18,8 @@ namespace Server.Models
         public const string REQ_P2PSpecifiedClient = "P2PSpecifiedClient";
 
         public const string REQ_P2PEstablished = "P2PEstablished";
-        public const string REQ_P2PFailed = "P2PFailed"; 
+        public const string REQ_P2PFailed = "P2PFailed";
+
+        public const string REQ_P2PMessage = "P2PMessage";
     }
 }

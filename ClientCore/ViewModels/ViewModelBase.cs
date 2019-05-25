@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
-namespace Client.ViewModels
+namespace ClientCore.ViewModels
 {
     [Serializable]
     public class ViewModelBase : INotifyPropertyChanged

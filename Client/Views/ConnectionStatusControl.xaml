@@ -1,15 +1,17 @@
 ﻿<UserControl x:Class="Client.Views.ConnectionStatusControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:utils="clr-namespace:Client.Utils"
              Loaded="UserControl_Loaded">
+    <UserControl.Resources>
+        <utils:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition MinWidth="180" Width="180"/>
-            <ColumnDefinition Width="5"/>
+            <ColumnDefinition MinWidth="185" MaxWidth="260" Width="auto"/>
             <ColumnDefinition Width="*" MinWidth="180"/>
         </Grid.ColumnDefinitions>
-        <Grid>
+        <Grid Margin="0,0,5,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="*"/>
@@ -26,19 +28,27 @@
             <ListBox Grid.Row="1" 
                      BorderBrush="{x:Null}" Background="{x:Null}"
                      ItemsSource="{Binding ClientInfoList}"
-                     SelectedItem="{Binding SelectedClient,Mode=TwoWay}"
-                     DisplayMemberPath="Name"/>
+                     SelectedItem="{Binding SelectedClient,Mode=TwoWay}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Client.Name}"/>
+                            <TextBlock Text="(Established)" Foreground="Green"
+                                       Visibility="{Binding Established,Converter={StaticResource boolToVisibilityConverter}}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
 
         </Grid>
-        <Border Grid.Column="1" Background="#EEEEF2">
-            <GridSplitter Cursor="SizeWE"/>
-        </Border>
-        <Grid Grid.Column="2">
+        <GridSplitter Cursor="SizeWE" Background="#EEEEF2" HorizontalAlignment="Right" Width="5"/>
+        <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="40"/>
             </Grid.RowDefinitions>
             <Grid Background="#EEEEF2">
                 <Grid.ColumnDefinitions>
@@ -71,6 +81,16 @@
             <ScrollViewer Grid.Row="3" x:Name="P2PScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                 <ItemsControl ItemsSource="{Binding P2PCommunities}"/>
             </ScrollViewer>
+
+            <Grid Grid.Row="4" Background="#EEEEF2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="10"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBox x:Name="MessageTextBox" VerticalContentAlignment="Center" Height="30" VerticalAlignment="Center"/>
+                <Button Grid.Column="2" Width="65" Height="30" Content="Send" Margin="0,0,10,0" Click="Send_Click"/>
+            </Grid>
         </Grid>
     </Grid>
 </UserControl>
