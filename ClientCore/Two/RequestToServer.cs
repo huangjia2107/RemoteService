@@ -109,7 +109,7 @@ namespace ClientCore
 
         }
 
-        private void SendToIPEndPoint<T>(string packetType, T message, IPAddress ip, int port)
+        private bool SendToIPEndPoint<T>(string packetType, T message, IPAddress ip, int port)
         {
             try
             {
@@ -118,11 +118,13 @@ namespace ClientCore
             catch (Exception ex)
             {
                 ServerMessageReceivedAction(ex.Message + ex.StackTrace);
+                return false;
             }
 
+            return true;
         }
 
-        private void MultiholePunching(string targetIP, int targetPort, int startPort, int tryTimes)
+        private bool MultiholePunching(IPAddress targetIP, int targetPort, int startPort, int tryTimes)
         {
             var ports = Enumerable.Range(startPort, 65535 - startPort + 1).ToArray();
             CommonHelper.Shuffle(ports);
@@ -133,7 +135,9 @@ namespace ClientCore
                 var port = ports[i];
                 if (port != targetPort)
                 {
-                    SendToIPEndPoint(PacketType.REQ_P2PEstablished, LocalClientInfo.Client.Guid, IPAddress.Parse(targetIP), port);
+                    if (!SendToIPEndPoint(PacketType.REQ_P2PEstablished, LocalClientInfo.Client.Guid, targetIP, port))
+                        return false;
+
                     System.Threading.Thread.Sleep(50);
                 }
 
@@ -141,6 +145,7 @@ namespace ClientCore
             }
 
             ServerMessageReceivedAction("Send P2P over");
+            return true;
         }
     }
 }

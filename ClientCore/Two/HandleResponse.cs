@@ -53,13 +53,17 @@ namespace ClientCore
                 {
                     ServerMessageReceivedAction(string.Format("Send P2P try string to {0}:{1}({2})", p2pSourceClient.IP, p2pSourceClient.Port, sourceClient.Client.Name));
 
-                    //var ttl = _udpConnection.Ttl;
-                    //_udpConnection.Ttl = 3;
+                    /*
+                    var ttl = _udpConnection.Ttl;
+                    _udpConnection.Ttl = 3;
 
-                    //MultiholePunching(p2pSourceClient.IP, p2pSourceClient.Port, 1025, 2000);
+                    if (!MultiholePunching(IPAddress.Parse(p2pSourceClient.IP), p2pSourceClient.Port, p2pSourceClient.Port, 2000))
+                    {
+                        _udpConnection.Ttl = ttl;
+                        return;
+                    }
+                    */
                     SendToIPEndPoint(PacketType.REQ_P2PEstablished, LocalClientInfo.Client.Guid, IPAddress.Parse(p2pSourceClient.IP), p2pSourceClient.Port);
-
-                    //_udpConnection.Ttl = ttl;
 
                     _targetGuid = p2pSourceClient.GUID;
                     UploadUDPInfo();
@@ -69,7 +73,7 @@ namespace ClientCore
             {
                 ServerMessageReceivedAction(string.Format("Try P2P to {0}:{1}({2})", p2pSourceClient.IP, p2pSourceClient.Port, sourceClient.Client.Name));
 
-                //MultiholePunching(p2pSourceClient.IP, p2pSourceClient.Port, 1025, 2000);
+                //MultiholePunching(IPAddress.Parse(p2pSourceClient.IP), p2pSourceClient.Port, 1025, 2000);
                 SendToIPEndPoint(PacketType.REQ_P2PEstablished, LocalClientInfo.Client.Guid, IPAddress.Parse(p2pSourceClient.IP), p2pSourceClient.Port);
 
                 return;
