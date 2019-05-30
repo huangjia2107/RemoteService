@@ -10,12 +10,15 @@ using Server.Config;
 using ClientCore.Models;
 using Server.Models;
 using ClientCore.ViewModels;
+using ScreenCore.Capture;
+using System.Windows;
 
 namespace Client.Models
 {
     class ClientModel : ViewModelBase
     {
         public IClientCore ClientCore { get; private set; }
+        public ScreenCapture Capture { get; private set; }
 
         private ServerConfig _serverConfig = null;
 
@@ -23,12 +26,21 @@ namespace Client.Models
         {
             _serverConfig = ConfigHelper<ServerConfig>.Instance().GetServerConfig();
             _clientInfoList = new List<ClientInfoEx>();
-             
+
+            Capture = new ScreenCapture((int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight);
             ClientCore = new TwoServerCore();
 
             ServerCommunities = new ObservableCollection<string>();
             P2PCommunities = new ObservableCollection<string>();
         }
+
+        private bool _isSharingScreen;
+        public bool IsSharingScreen
+        {
+            get { return _isSharingScreen; }
+            set { _isSharingScreen = value; InvokePropertyChanged("IsSharingScreen"); }
+        }
+
 
         private ClientInfoEx _selectedClient;
         public ClientInfoEx SelectedClient

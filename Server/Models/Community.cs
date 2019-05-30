@@ -36,4 +36,19 @@ namespace Server.Models
         [ProtoMember(3)]
         public int Port { get; set; }
     }
+
+    [ProtoContract]
+    public class Screenshot
+    {
+        [ProtoMember(1)]
+        public int Width { get; set; }
+        [ProtoMember(2)]
+        public int Height { get; set; }
+        [ProtoMember(3)]
+        public int OriginalLength { get; set; }
+        [ProtoMember(4)]
+        public int CompressLength { get; set; }
+        [ProtoMember(5)]
+        public byte[] Buffer { get; set; }
+    }
 }

@@ -32,7 +32,7 @@ namespace ClientCore
                 connection.SendObject<string>(PacketType.REQ_P2PEstablished, LocalClientInfo.Client.Guid);
             }
             else
-            {  
+            {
                 //for show in server
                 _mainConnection.SendObject<P2PRequest>(PacketType.REQ_P2PEstablished, new P2PRequest { SourceGuid = LocalClientInfo.Client.Guid, TargetGuid = guid });
             }
@@ -42,11 +42,17 @@ namespace ClientCore
         {
             var ipEndPoint = (IPEndPoint)connection.ConnectionInfo.RemoteEndPoint;
             var clientInfo = _clientInfoList.FirstOrDefault(clientEx => clientEx.IP == ipEndPoint.Address.ToString() && clientEx.Port == ipEndPoint.Port);
-            
-            if(clientInfo != null)
+
+            if (clientInfo != null)
                 P2PMessageReceivedAction(string.Format("[ {0}({1}:{2}) ]: {3}", clientInfo.Client.Name, ipEndPoint.Address, ipEndPoint.Port, message));
             else
                 P2PMessageReceivedAction(string.Format("[ {0}({1}:{2}) ]: {3}", "UnKnown", ipEndPoint.Address, ipEndPoint.Port, message));
+        }
+
+        private void HandleP2PScreenshot(PacketHeader header, Connection connection, Screenshot screenshot)
+        {
+            if (ScreenshotReceivedAction != null && screenshot != null)
+                ScreenshotReceivedAction(screenshot);
         }
     }
 }

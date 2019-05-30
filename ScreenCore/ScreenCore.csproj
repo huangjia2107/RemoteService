@@ -39,15 +39,6 @@
     <OutputPath>bin\x86\Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Accord">
-      <HintPath>..\Libs\Accord.dll</HintPath>
-    </Reference>
-    <Reference Include="Accord.Video">
-      <HintPath>..\Libs\Accord.Video.dll</HintPath>
-    </Reference>
-    <Reference Include="Accord.Video.FFMPEG">
-      <HintPath>..\Libs\Accord.Video.FFMPEG.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -57,7 +48,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Capture\ScreenCapture.cs" />
+    <Compile Include="Capture\DXGIScreenshot.cs" />
+    <Compile Include="Capture\GDIScreenshot.cs" />
+    <Compile Include="ScreenCapture.cs" />
+    <Compile Include="Interface\IScreenshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

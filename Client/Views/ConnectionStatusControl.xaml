@@ -87,9 +87,22 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="10"/>
                     <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBox x:Name="MessageTextBox" VerticalContentAlignment="Center" Height="30" VerticalAlignment="Center"/>
                 <Button Grid.Column="2" Width="65" Height="30" Content="Send" Margin="0,0,10,0" Click="Send_Click"/>
+                <ToggleButton Grid.Column="3" Width="65" Height="30" Content="Screen" Margin="0,0,10,0" Click="Screen_Click"
+                              IsChecked="{Binding IsSharingScreen,Mode=TwoWay}">
+                    <ToggleButton.Style>
+                        <Style TargetType="ToggleButton">
+                            <Style.Triggers>
+                                <Trigger Property="IsChecked" Value="true">
+                                    <Setter Property="Content" Value="Stop"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ToggleButton.Style>
+                </ToggleButton>
             </Grid>
         </Grid>
     </Grid>

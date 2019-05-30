@@ -5,6 +5,7 @@ using System.Text;
 using ClientCore.Config;
 using Server.Models;
 using ClientCore.Models;
+using System.Net;
 
 namespace ClientCore.Interface
 {
@@ -14,7 +15,9 @@ namespace ClientCore.Interface
         Action<string> ServerMessageReceivedAction { get; set; }
         Action<string> P2PMessageReceivedAction { get; set; }
 
-        ClientInfoEx LocalClientInfo { get;}
+        Action<Screenshot> ScreenshotReceivedAction { get; set; }
+
+        ClientInfoEx LocalClientInfo { get; }
 
         void Start();
 
@@ -25,5 +28,7 @@ namespace ClientCore.Interface
         void TestNAT();
 
         void Send(string targetGuid, string message);
+
+        bool ShareScreenshot(IPAddress ip, int port, Screenshot screenshot);
     }
 }

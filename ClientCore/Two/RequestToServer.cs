@@ -30,7 +30,7 @@ namespace ClientCore
 
         public void Send(string targetGuid, string message)
         {
-            if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(message.Trim()) 
+            if (string.IsNullOrEmpty(message) || string.IsNullOrEmpty(message.Trim())
                 || _mainConnection == null || _mainConnection.ConnectionInfo.ConnectionState != ConnectionState.Established)
                 return;
 
@@ -44,6 +44,17 @@ namespace ClientCore
             P2PMessageReceivedAction(string.Format("[ {0} ]: {1}", "Local", message));
 
             SendToIPEndPoint(PacketType.REQ_P2PMessage, message, IPAddress.Parse(targetClient.IP), targetClient.Port);
+        }
+
+        public bool ShareScreenshot(IPAddress ip, int port, Screenshot screenshot)
+        {
+            if (_mainConnection == null || _mainConnection.ConnectionInfo.ConnectionState != ConnectionState.Established || screenshot == null)
+                return false;
+
+            if (_udpConnection == null)
+                _udpConnection = CreateLocalUDPConnection();
+
+            return SendToIPEndPoint(PacketType.REQ_P2PScreenshot, screenshot, ip, port);
         }
 
         public void RequestP2PConnection(string targetGuid)

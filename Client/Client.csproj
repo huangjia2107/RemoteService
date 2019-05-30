@@ -34,6 +34,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -48,6 +50,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Utils\Converters.cs" />
+    <Compile Include="Utils\Win32.cs" />
     <Compile Include="Views\ConnectionStatusControl.xaml.cs">
       <DependentUpon>ConnectionStatusControl.xaml</DependentUpon>
     </Compile>
@@ -104,6 +107,14 @@
     <ProjectReference Include="..\ClientCore\ClientCore.csproj">
       <Project>{4C1C48F5-4D2D-497E-9B21-0F2C04C12811}</Project>
       <Name>ClientCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Lzma\Lzma.csproj">
+      <Project>{BD71EA23-511F-43E1-BFBF-9204074673DA}</Project>
+      <Name>Lzma</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ScreenCore\ScreenCore.csproj">
+      <Project>{BB12A3B7-4A91-446D-8465-1004B8D9FEB7}</Project>
+      <Name>ScreenCore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

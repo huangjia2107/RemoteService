@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Server.Models;
 using NetworkCommsDotNet.Connections;
 using NetworkCommsDotNet;
@@ -20,6 +19,7 @@ namespace ClientCore
         public Action<IEnumerable<ClientInfoEx>> ClientInfoListChangedAction { get; set; }
         public Action<string> ServerMessageReceivedAction { get; set; }
         public Action<string> P2PMessageReceivedAction { get; set; }
+        public Action<Screenshot> ScreenshotReceivedAction { get; set; }
 
         public ClientInfoEx LocalClientInfo { get; private set; }
 
@@ -68,10 +68,10 @@ namespace ClientCore
 
         public void Start()
         {
-            if (!ResolveDns())
-                return;
+//             if (!ResolveDns())
+//                 return;
 
-            //_serverConfig.IP = "39.97.185.194";
+            _serverConfig.IP = "192.168.24.22";
             ServerMessageReceivedAction("Start connection to Main server");
 
             try
@@ -79,10 +79,15 @@ namespace ClientCore
                 _mainConnection = TCPConnection.GetConnection(new ConnectionInfo(_serverConfig.IP, _serverConfig.Port));
                 if (_mainConnection.ConnectionInfo.ConnectionState == ConnectionState.Established)
                 {
+                    //global
                     NetworkComms.AppendGlobalConnectionCloseHandler(HandleConnectionShutdown);
+
+                    //UDP
                     NetworkComms.AppendGlobalIncomingPacketHandler<string>(PacketType.REQ_P2PEstablished, HandleP2PEstablished);
                     NetworkComms.AppendGlobalIncomingPacketHandler<string>(PacketType.REQ_P2PMessage, HandleP2PMessage);
+                    NetworkComms.AppendGlobalIncomingPacketHandler<Screenshot>(PacketType.REQ_P2PScreenshot, HandleP2PScreenshot);
 
+                    //TCP
                     _mainConnection.AppendIncomingPacketHandler<ClientInfo[]>(PacketType.REQ_OnlineClientInfos, HandleOnlineClientInfos);
                     _mainConnection.AppendIncomingPacketHandler<string>(PacketType.REQ_NATInfo, HandleNATInfo);
                     _mainConnection.AppendIncomingPacketHandler<string>(PacketType.REQ_UDPInfo, HandleUDPInfo);
