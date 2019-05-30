@@ -16,8 +16,7 @@ using System.Threading;
 using ClientCore.Models;
 using System.Net;
 using Server.Models;
-using System.IO;
-using Lzma;
+using System.IO; 
 using System.IO.Compression;
 using System.Diagnostics;
 
