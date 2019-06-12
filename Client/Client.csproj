@@ -32,11 +32,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\Output\Client\Debug\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\Output\Client\Release\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <DebugType>pdbonly</DebugType>
     <DebugSymbols>true</DebugSymbols>
