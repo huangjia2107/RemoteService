@@ -43,17 +43,20 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libs\SharpDX.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.D3DCompiler">
+    <Reference Include="SharpDX.D3DCompiler, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libs\SharpDX.D3DCompiler.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Direct3D11">
+    <Reference Include="SharpDX.Direct3D11, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libs\SharpDX.Direct3D11.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.DXGI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libs\SharpDX.DXGI.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Mathematics">
+    <Reference Include="SharpDX.Mathematics, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libs\SharpDX.Mathematics.dll</HintPath>
     </Reference>
     <Reference Include="System" />
