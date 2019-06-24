@@ -27,7 +27,7 @@ namespace ScreenCore.Capture
         {
             //win8/win10
             if (Environment.OSVersion.Version >= new Version(6, 2))
-                _screenshot = new DXGIScreenshot(width, height);
+                _screenshot = new DXGIScreenshot();
             else
                 _screenshot = new GDIScreenshot(width, height);
         }

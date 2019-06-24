@@ -13,10 +13,8 @@ namespace ScreenCore.Capture
 {
     class DXGIScreenshot : IScreenshot
     {
-        public DXGIScreenshot(int width, int height)
+        public DXGIScreenshot()
         {
-            Width = width;
-            Height = height;
         }
 
         private byte[] GetBitmap()
@@ -41,10 +39,10 @@ namespace ScreenCore.Capture
             var output1 = output.QueryInterface<Output1>();
 
             // Width/Height of desktop to capture
-            int width = ((Rectangle)output.Description.DesktopBounds).Width;
-            int height = ((Rectangle)output.Description.DesktopBounds).Height;
+            this.Width = ((Rectangle)output.Description.DesktopBounds).Width;
+            this.Height = ((Rectangle)output.Description.DesktopBounds).Height;
 
-            var buffer = new byte[width * height * 4];
+            byte[] buffer = null;
 
             // Create Staging texture CPU-accessible
             var textureDesc = new Texture2DDescription
@@ -52,8 +50,8 @@ namespace ScreenCore.Capture
                 CpuAccessFlags = CpuAccessFlags.Read,
                 BindFlags = BindFlags.None,
                 Format = Format.B8G8R8A8_UNorm,
-                Width = width,
-                Height = height,
+                Width = Width,
+                Height = Height,
                 OptionFlags = ResourceOptionFlags.None,
                 MipLevels = 1,
                 ArraySize = 1,
@@ -85,32 +83,9 @@ namespace ScreenCore.Capture
                         // Get the desktop capture texture
                         var mapSource = device.ImmediateContext.MapSubresource(screenTexture, 0, MapMode.Read, MapFlags.None);
 
+                        buffer = new byte[Width * Height * 4];
                         Marshal.Copy(mapSource.DataPointer, buffer, 0, buffer.Length);
-
-                        /*
-                       // Create Drawing.Bitmap
-                       var bitmap = new System.Drawing.Bitmap(width, height, PixelFormat.Format32bppArgb);
-                       var boundsRect = new System.Drawing.Rectangle(0, 0, width, height);
-
-                       // Copy pixels from screen capture Texture to GDI bitmap
-                       var mapDest = bitmap.LockBits(boundsRect, ImageLockMode.WriteOnly, bitmap.PixelFormat);
-
-                       var sourcePtr = mapSource.DataPointer;
-                       var destPtr = mapDest.Scan0;
-                       for (int y = 0; y < height; y++)
-                       {
-                           // Copy a single line 
-                           Utilities.CopyMemory(destPtr, sourcePtr, width * 4);
-
-                           // Advance pointers
-                           sourcePtr = IntPtr.Add(sourcePtr, mapSource.RowPitch);
-                           destPtr = IntPtr.Add(destPtr, mapDest.Stride);
-                       }
-                       
-
-                        // Release source and dest locks
-                        bitmap.UnlockBits(mapDest);
-                        */
+                         
                         device.ImmediateContext.UnmapSubresource(screenTexture, 0);
 
                         // Capture done
@@ -128,9 +103,17 @@ namespace ScreenCore.Capture
                     if (e.ResultCode.Code != SharpDX.DXGI.ResultCode.WaitTimeout.Result.Code)
                     {
                         throw e;
-                    } 
+                    }
                 }
             }
+
+            duplicatedOutput.Dispose();
+            screenTexture.Dispose();
+            output1.Dispose();
+            output.Dispose();
+            device.Dispose();
+            adapter.Dispose();
+            factory.Dispose();
 
             return null;
         }
@@ -144,9 +127,9 @@ namespace ScreenCore.Capture
         {
             try
             {
-                return GetBitmap(); 
+                return GetBitmap();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return null;
             }
