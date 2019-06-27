@@ -13,36 +13,38 @@ namespace ScreenCore.Capture
 {
     class DXGIScreenshot : IScreenshot
     {
+        // # of graphics card adapter
+        const int numAdapter = 0;
+
+        // # of output device (i.e. monitor)
+        const int numOutput = 0;
+
+        Factory1 factory = null;
+        Adapter1 adapter = null;
+        Device device = null;
+
+        Output output = null;
+        Output1 output1 = null;
+
+        Texture2D screenTexture = null;
+        OutputDuplication duplicatedOutput;
+
         public DXGIScreenshot()
         {
-        }
-
-        private byte[] GetBitmap()
-        {
-            // # of graphics card adapter
-            const int numAdapter = 0;
-
-            // # of output device (i.e. monitor)
-            const int numOutput = 0;
-
-            const string outputFileName = "ScreenCapture.bmp";
-
             // Create DXGI Factory1
-            var factory = new Factory1();
-            var adapter = factory.GetAdapter1(numAdapter);
+            factory = new Factory1();
+            adapter = factory.GetAdapter1(numAdapter);
 
             // Create device from Adapter
-            var device = new Device(adapter);
+            device = new Device(adapter);
 
             // Get DXGI.Output
-            var output = adapter.GetOutput(numOutput);
-            var output1 = output.QueryInterface<Output1>();
+            output = adapter.GetOutput(numOutput);
+            output1 = output.QueryInterface<Output1>();
 
             // Width/Height of desktop to capture
             this.Width = ((Rectangle)output.Description.DesktopBounds).Width;
             this.Height = ((Rectangle)output.Description.DesktopBounds).Height;
-
-            byte[] buffer = null;
 
             // Create Staging texture CPU-accessible
             var textureDesc = new Texture2DDescription
@@ -58,10 +60,15 @@ namespace ScreenCore.Capture
                 SampleDescription = { Count = 1, Quality = 0 },
                 Usage = ResourceUsage.Staging
             };
-            var screenTexture = new Texture2D(device, textureDesc);
+            screenTexture = new Texture2D(device, textureDesc);
 
             // Duplicate the output
-            var duplicatedOutput = output1.DuplicateOutput(device);
+            duplicatedOutput = output1.DuplicateOutput(device);
+        }
+
+        private byte[] GetBitmap()
+        {
+            byte[] buffer = null;
 
             bool captureDone = false;
             for (int i = 0; !captureDone; i++)
@@ -106,7 +113,12 @@ namespace ScreenCore.Capture
                     }
                 }
             }
+             
+            return null;
+        }
 
+        public void Dispose()
+        {
             duplicatedOutput.Dispose();
             screenTexture.Dispose();
             output1.Dispose();
@@ -114,8 +126,6 @@ namespace ScreenCore.Capture
             device.Dispose();
             adapter.Dispose();
             factory.Dispose();
-
-            return null;
         }
 
         #region IScreenshot Members
