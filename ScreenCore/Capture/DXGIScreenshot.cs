@@ -101,9 +101,7 @@ namespace ScreenCore.Capture
 
                     screenResource.Dispose();
                     duplicatedOutput.ReleaseFrame();
-
-                    return buffer;
-
+                     
                 }
                 catch (SharpDXException e)
                 {
@@ -113,8 +111,8 @@ namespace ScreenCore.Capture
                     }
                 }
             }
-             
-            return null;
+
+            return buffer;
         }
 
         public void Dispose()
