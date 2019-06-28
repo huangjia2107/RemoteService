@@ -133,5 +133,22 @@ namespace Client.Views
 
             return result;
         }
+
+        private void TestCapture_Click(object sender, RoutedEventArgs e)
+        {
+            ThreadPool.QueueUserWorkItem(s =>
+            {
+                if (_clientModel.Capture.RefreshBuffer())
+                {
+                    using (var bitmap = Argb32BytesToBitmap(_clientModel.Capture.CurrentBuffer, _clientModel.Capture.Width, _clientModel.Capture.Height))
+                    {
+                        ddd.Dispatcher.Invoke((Action)(() =>
+                        {
+                            ddd.Source = BitmapToBitmapSource(bitmap);
+                        }));
+                    }
+                }
+            });
+        }
     }
 }
