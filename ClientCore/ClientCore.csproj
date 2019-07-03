@@ -93,6 +93,12 @@
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\P2PHelper\P2PHelper.csproj">
+      <Project>{C8E13F15-E68A-46E2-84A5-2EBDDD907BF0}</Project>
+      <Name>P2PHelper</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -97,26 +97,7 @@ namespace Server.Core
             clientSession.Connection.SendObject<string>(PacketType.REQ_NATInfo, string.Format("UDP NAT Info = {0}:{1}", ipEndPoint.Address, ipEndPoint.Port));
         }
 
-        private void HandleUDPInfo(PacketHeader header, Connection connection, string fromGuid)
-        {
-            if (connection == null || string.IsNullOrEmpty(fromGuid))
-                return;
-
-            var clientSession = _clientSessionList.FirstOrDefault(cs => cs.Guid == fromGuid);
-            if (clientSession == null)
-            {
-                ConsoleHelper.Info("[ UDP ] Report UDP is Established, Not found guid = " + fromGuid);
-                return;
-            }
-
-            var ipEndPoint = (IPEndPoint)connection.ConnectionInfo.RemoteEndPoint;
-            clientSession.UDPEndPoint = ipEndPoint;
-
-            ConsoleHelper.Mark(string.Format("[ UDP ] Received UDP info, NAT Info = {0}:{1}({2})", ipEndPoint.Address, ipEndPoint.Port, clientSession.Name));
-            clientSession.Connection.SendObject<string>(PacketType.REQ_UDPInfo, string.Format("UDP NAT Info = {0}:{1}", ipEndPoint.Address, ipEndPoint.Port));
-        }
-
-        private void HandleP2PRequest(PacketHeader header, Connection connection, P2PRequest p2pRequest)
+        private void HandleUDPP2PRequest(PacketHeader header, Connection connection, P2PRequest p2pRequest)
         {
             if (connection == null || p2pRequest == null)
                 return;
@@ -129,17 +110,21 @@ namespace Server.Core
             if (targetClient == null)
                 return;
 
-            var sourceIPPort = (IPEndPoint)connection.ConnectionInfo.RemoteEndPoint;
-            var targetIPPort = (IPEndPoint)targetClient.Connection.ConnectionInfo.RemoteEndPoint;
+            //udp ip/port
+            var sourceUDPIPPort = (IPEndPoint)connection.ConnectionInfo.RemoteEndPoint;
 
-            ConsoleHelper.Info(string.Format("[ {0} ] {1}:{2}({3}) request {4}:{5}({6}) P2P to {7}:{8}",
+            //tcp ip/port
+            var sourceTCPIPPort = (IPEndPoint)sourceClient.Connection.ConnectionInfo.RemoteEndPoint;
+            var targetTCPIPPort = (IPEndPoint)targetClient.Connection.ConnectionInfo.RemoteEndPoint;
+
+            ConsoleHelper.Info(string.Format("[ {0} ] {1}({2}:{3}) request {4}({5}:{6}) P2P to {7}:{8}",
                 connection.ConnectionInfo.ConnectionType,
-                sourceIPPort.Address, sourceIPPort.Port, sourceClient.Name,
-                targetIPPort.Address, targetIPPort.Port, targetClient.Name,
-                sourceClient.UDPEndPoint.Address, sourceClient.UDPEndPoint.Port));
+                sourceClient.Name, sourceTCPIPPort.Address, sourceTCPIPPort.Port,
+                targetClient.Name, targetTCPIPPort.Address, targetTCPIPPort.Port,
+                sourceUDPIPPort.Address, sourceUDPIPPort.Port));
 
-            targetClient.Connection.SendObject<P2PClient>(PacketType.REQ_P2PSpecifiedClient, new P2PClient { GUID = p2pRequest.SourceGuid, IP = sourceClient.UDPEndPoint.Address.ToString(), Port = sourceClient.UDPEndPoint.Port });
-        }
+            targetClient.Connection.SendObject<P2PClient>("UDP_P2P_Request", new P2PClient { GUID = p2pRequest.SourceGuid, IP = sourceUDPIPPort.Address.ToString(), Port = sourceUDPIPPort.Port });
+        } 
 
         private void HandleP2PEstablished(PacketHeader header, Connection connection, P2PRequest p2pRequest)
         {
@@ -155,25 +140,7 @@ namespace Server.Core
                 return;
 
             ConsoleHelper.Info(string.Format("[ TCP ] {0} Established P2P connection with {1}", sourceClient.Name, targetClient.Name));
-        }
-
-        private void HandleP2PFailed(PacketHeader header, Connection connection, P2PRequest p2pRequest)
-        {
-            if (connection == null || p2pRequest == null)
-                return;
-
-            var sourceClient = _clientSessionList.FirstOrDefault(cs => cs.Guid == p2pRequest.SourceGuid);
-            if (sourceClient == null)
-                return;
-
-            var targetClient = _clientSessionList.FirstOrDefault(cs => cs.Guid == p2pRequest.TargetGuid);
-            if (targetClient == null)
-                return;
-
-            ConsoleHelper.Info(string.Format("[ TCP ] {0} failed P2P connection with {1}", sourceClient.Name, targetClient.Name));
-
-            targetClient.Connection.SendObject<string>(PacketType.REQ_P2PFailed, sourceClient.Guid);
-        }
+        } 
 
         private void HandleConnectionClose(Connection connection)
         {

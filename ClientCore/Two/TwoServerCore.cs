@@ -11,6 +11,7 @@ using Server.Config;
 using ClientCore.Interface;
 using NetworkCommsDotNet.Connections.UDP;
 using ClientCore.Models;
+using P2PHelper.UDP;
 
 namespace ClientCore
 {
@@ -27,13 +28,8 @@ namespace ClientCore
         private ServerConfig _serverConfig = null;
 
         //long connection
-        private Connection _mainConnection = null;
-        //just for public ip and port
-        private UDPConnection _udpConnection = null; 
-
-        //if current client is the originator of the P2P connection 
-        private bool _isP2PSource = false;
-        private string _targetGuid = null;
+        private Connection _mainConnection = null; 
+        private UDPTraversal _udpTraversal = null; 
 
         public TwoServerCore()
         {
@@ -71,7 +67,7 @@ namespace ClientCore
 //             if (!ResolveDns())
 //                 return;
 
-            _serverConfig.IP = "192.168.24.22";
+            _serverConfig.IP = "127.0.0.1";
             ServerMessageReceivedAction("Start connection to Main server");
 
             try
@@ -79,20 +75,20 @@ namespace ClientCore
                 _mainConnection = TCPConnection.GetConnection(new ConnectionInfo(_serverConfig.IP, _serverConfig.Port));
                 if (_mainConnection.ConnectionInfo.ConnectionState == ConnectionState.Established)
                 {
+                    _udpTraversal = new UDPTraversal(_serverConfig.IP, _serverConfig.P2P_Port, UDPP2PConnected);
+
                     //global
                     NetworkComms.AppendGlobalConnectionCloseHandler(HandleConnectionShutdown);
 
                     //UDP
-                    NetworkComms.AppendGlobalIncomingPacketHandler<string>(PacketType.REQ_P2PEstablished, HandleP2PEstablished);
                     NetworkComms.AppendGlobalIncomingPacketHandler<string>(PacketType.REQ_P2PMessage, HandleP2PMessage);
                     NetworkComms.AppendGlobalIncomingPacketHandler<Screenshot>(PacketType.REQ_P2PScreenshot, HandleP2PScreenshot);
 
-                    //TCP
+                    //TCP 
                     _mainConnection.AppendIncomingPacketHandler<ClientInfo[]>(PacketType.REQ_OnlineClientInfos, HandleOnlineClientInfos);
                     _mainConnection.AppendIncomingPacketHandler<string>(PacketType.REQ_NATInfo, HandleNATInfo);
-                    _mainConnection.AppendIncomingPacketHandler<string>(PacketType.REQ_UDPInfo, HandleUDPInfo);
-                    _mainConnection.AppendIncomingPacketHandler<P2PClient>(PacketType.REQ_P2PSpecifiedClient, HandleP2PSpecifiedClient);
-                    _mainConnection.AppendIncomingPacketHandler<string>(PacketType.REQ_P2PFailed, HandleP2PFailed);
+
+                    _mainConnection.AppendIncomingPacketHandler<P2PClient>(PacketType.REQ_UDPP2PRequest, HandleUDPP2PRequest);
 
                     SendLocalClientInfo();
                 }
@@ -111,6 +107,6 @@ namespace ClientCore
                 NetworkComms.RemoveGlobalConnectionCloseHandler(HandleConnectionShutdown);
                 _mainConnection = null;
             }
-        } 
+        }
     }
 }

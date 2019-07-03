@@ -10,15 +10,12 @@ namespace Server.Models
         public const string REQ_ClientInfo = "ClientInfo";
         public const string REQ_OnlineClientInfos = "OnlineClientInfos";
 
-        public const string REQ_NATInfo = "NATInfo";
+        public const string REQ_NATInfo = "NATInfo"; 
 
-        public const string REQ_UDPInfo = "UDPInfo";
+        public const string REQ_UDPP2PRequest = "UDP_P2P_Request";
+        public const string REQ_UDPP2PConnect = "UDP_P2P_Connect";
 
-        public const string REQ_P2PRequest = "P2PRequest";
-        public const string REQ_P2PSpecifiedClient = "P2PSpecifiedClient";
-
-        public const string REQ_P2PEstablished = "P2PEstablished";
-        public const string REQ_P2PFailed = "P2PFailed";
+        public const string REQ_P2PEstablished = "P2PEstablished"; 
 
         public const string REQ_P2PMessage = "P2PMessage";
         public const string REQ_P2PScreenshot = "P2PScreenshot";

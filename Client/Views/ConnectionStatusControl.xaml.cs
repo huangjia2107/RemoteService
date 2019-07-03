@@ -136,7 +136,7 @@ namespace Client.Views
             MessageTextBox.Text = string.Empty;
         }
 
-        private bool dddd(IPAddress ip, int port, byte[] buffer, int originLength, long compressLength)
+        private bool SendScreenshotBuffer(IPAddress ip, int port, byte[] buffer, int originLength, long compressLength)
         {
             if (!_clientModel.ClientCore.ShareScreenshot(ip, port,
                                         new Screenshot
@@ -161,36 +161,22 @@ namespace Client.Views
 
             var targetClient = _clientModel.ClientInfoList.FirstOrDefault(c => c.Client.Guid == _clientModel.SelectedClient.Client.Guid && c.Established);
             if (targetClient == null)
-                return;
-
-            _clientModel.IsSharingScreen = true;
+                return; 
 
             var ip = IPAddress.Parse(targetClient.IP);
-            var port = targetClient.Port;
-
-            var stopwatch = Stopwatch.StartNew();
+            var port = targetClient.Port; 
 
             ThreadPool.QueueUserWorkItem(state =>
             { 
                 while (_clientModel.IsSharingScreen)
-                {
-                    stopwatch.Start();
+                { 
                     if (_clientModel.Capture.RefreshBuffer())// && _clientModel.Capture.IsDiff())
-                    {
-                        stopwatch.Stop();
-                        Trace.WriteLine("[ Share Screen ] Capture = " + stopwatch.ElapsedMilliseconds);
-
-                        stopwatch.Reset();
-
+                    {  
                         using (var ms = new MemoryStream())
                         {
                             using (var gs = new GZipStream(ms, CompressionMode.Compress, true))
                                 gs.Write(_clientModel.Capture.CurrentBuffer, 0, _clientModel.Capture.CurrentBuffer.Length);
-
-                            stopwatch.Stop();
-                            Trace.WriteLine("[ Share Screen ] Compress = " + stopwatch.ElapsedMilliseconds);
-                            stopwatch.Reset();
-
+                              
                             ms.Seek(0, SeekOrigin.Begin);
 
                             var totalLength = ms.Length;
@@ -204,17 +190,14 @@ namespace Client.Views
                                 var readBuffer = new byte[sendSize];
                                 ms.Read(readBuffer, 0, (int)sendSize);
 
-                                dddd(ip, port, readBuffer, _clientModel.Capture.CurrentBuffer.Length, totalLength);
+                                SendScreenshotBuffer(ip, port, readBuffer, _clientModel.Capture.CurrentBuffer.Length, totalLength);
 
                                 if (ms.Position >= totalLength)
                                     break;
 
                                 Thread.Sleep(5);
                             }
-                        }
-
-                        stopwatch.Stop();
-                        Trace.WriteLine("[ Share Screen ] Send = " + stopwatch.ElapsedMilliseconds);
+                        } 
 
                         Thread.Sleep(30);
                     }

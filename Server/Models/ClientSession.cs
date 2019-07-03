@@ -10,7 +10,5 @@ namespace Server.Models
     class ClientSession : ClientInfo
     {
         public Connection Connection { get; set; }
-
-        public IPEndPoint UDPEndPoint { get; set; }
     }
 }

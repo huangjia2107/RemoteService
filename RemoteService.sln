@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientCore", "ClientCore\Cl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenCore", "ScreenCore\ScreenCore.csproj", "{BB12A3B7-4A91-446D-8465-1004B8D9FEB7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "P2PHelper", "P2PHelper\P2PHelper.csproj", "{C8E13F15-E68A-46E2-84A5-2EBDDD907BF0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,12 @@ Global
 		{BB12A3B7-4A91-446D-8465-1004B8D9FEB7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BB12A3B7-4A91-446D-8465-1004B8D9FEB7}.Release|x86.ActiveCfg = Release|x86
 		{BB12A3B7-4A91-446D-8465-1004B8D9FEB7}.Release|x86.Build.0 = Release|x86
+		{C8E13F15-E68A-46E2-84A5-2EBDDD907BF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8E13F15-E68A-46E2-84A5-2EBDDD907BF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8E13F15-E68A-46E2-84A5-2EBDDD907BF0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C8E13F15-E68A-46E2-84A5-2EBDDD907BF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8E13F15-E68A-46E2-84A5-2EBDDD907BF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8E13F15-E68A-46E2-84A5-2EBDDD907BF0}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -25,68 +25,30 @@ namespace ClientCore
             if (string.IsNullOrEmpty(message) || connection == null)
                 return;
 
-            ServerMessageReceivedAction(string.Format("Local UDP Info = {0}, {1}", _udpConnection.ConnectionInfo.LocalEndPoint, message));
+            ServerMessageReceivedAction(string.Format("Local UDP Info = {0}, {1}", _udpTraversal.LocalEndPoint, message));
         }
 
-        private void HandleUDPInfo(PacketHeader header, Connection connection, string message)
+
+        private void HandleUDPP2PRequest(PacketHeader header, Connection connection, P2PClient p2pClient)
         {
-            if (string.IsNullOrEmpty(_targetGuid) || _udpConnection == null)
+            var sourceClient = _clientInfoList.FirstOrDefault(clientEx => clientEx.Client.Guid == p2pClient.GUID);
+            if (sourceClient == null)
                 return;
 
-            ServerMessageReceivedAction("I am ready, request P2P, " + message);
-            connection.SendObject<P2PRequest>(PacketType.REQ_P2PRequest, new P2PRequest { SourceGuid = LocalClientInfo.Client.Guid, TargetGuid = _targetGuid });
-            return;
-        }
-
-        //P2PClient.GUID request P2P connection by P2PClient.IP and P2PClient.Port.
-        private void HandleP2PSpecifiedClient(PacketHeader header, Connection connection, P2PClient p2pSourceClient)
-        {
-            var sourceClient = _clientInfoList.FirstOrDefault(clientEx => clientEx.Client.Guid == p2pSourceClient.GUID);
-            ServerMessageReceivedAction(string.Format("{0}:{1}({2}) request P2P", p2pSourceClient.IP, p2pSourceClient.Port, sourceClient.Client.Name));
-
-            if (!_isP2PSource)
+            if (_udpTraversal.IsSource)
             {
-                if (_udpConnection == null)
-                    _udpConnection = CreateLocalUDPConnection();
-
-                if (_udpConnection != null)
-                {
-                    ServerMessageReceivedAction(string.Format("Send P2P try string to {0}:{1}({2})", p2pSourceClient.IP, p2pSourceClient.Port, sourceClient.Client.Name));
-
-                    /*
-                    var ttl = _udpConnection.Ttl;
-                    _udpConnection.Ttl = 3;
-
-                    if (!MultiholePunching(IPAddress.Parse(p2pSourceClient.IP), p2pSourceClient.Port, p2pSourceClient.Port, 2000))
-                    {
-                        _udpConnection.Ttl = ttl;
-                        return;
-                    }
-                    */
-                    SendToIPEndPoint(PacketType.REQ_P2PEstablished, LocalClientInfo.Client.Guid, IPAddress.Parse(p2pSourceClient.IP), p2pSourceClient.Port);
-
-                    _targetGuid = p2pSourceClient.GUID;
-                    UploadUDPInfo();
-                }
+                ServerMessageReceivedAction(string.Format("Connect to {0}({1}:{2})", sourceClient.Client.Name, p2pClient.IP, p2pClient.Port));
+                _udpTraversal.Connect(LocalClientInfo.Client.Guid, IPAddress.Parse(p2pClient.IP), p2pClient.Port);
             }
             else
             {
-                ServerMessageReceivedAction(string.Format("Try P2P to {0}:{1}({2})", p2pSourceClient.IP, p2pSourceClient.Port, sourceClient.Client.Name));
-
-                //MultiholePunching(IPAddress.Parse(p2pSourceClient.IP), p2pSourceClient.Port, 1025, 2000);
-                SendToIPEndPoint(PacketType.REQ_P2PEstablished, LocalClientInfo.Client.Guid, IPAddress.Parse(p2pSourceClient.IP), p2pSourceClient.Port);
-
-                return;
+                ServerMessageReceivedAction(string.Format("Punch to {0}({1}:{2})", sourceClient.Client.Name, p2pClient.IP, p2pClient.Port));
+                if (_udpTraversal.TryPunch(IPAddress.Parse(p2pClient.IP), p2pClient.Port))
+                {
+                    ServerMessageReceivedAction(string.Format("Target request to {0}", sourceClient.Client.Name));
+                    _udpTraversal.Request(new P2PRequest { SourceGuid = LocalClientInfo.Client.Guid, TargetGuid = p2pClient.GUID }, false);
+                }
             }
-        }
-
-        private void HandleP2PFailed(PacketHeader header, Connection connection, string targetGuid)
-        {
-            var targetClient = _clientInfoList.FirstOrDefault(clientEx => clientEx.Client.Guid == targetGuid);
-            ServerMessageReceivedAction(string.Format("Fail P2P connection with {0} and quit P2P", targetClient.Client.Name));
-
-            _isP2PSource = false;
-            _targetGuid = null;
         }
 
         private void HandleConnectionShutdown(Connection connection)
@@ -107,8 +69,7 @@ namespace ClientCore
             }
             else
             {
-                _isP2PSource = false;
-                _targetGuid = null;
+                _udpTraversal.CleanUp();
 
                 P2PMessageReceivedAction("P2P connection is disconnected");
                 DisposeConnection(connection);

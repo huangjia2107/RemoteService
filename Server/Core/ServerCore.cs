@@ -45,17 +45,11 @@ namespace Server.Core
             //request NAT info
             NetworkComms.AppendGlobalIncomingPacketHandler<string>(PacketType.REQ_NATInfo, HandleNATInfo);
 
-            //refresh and request NAT info
-            NetworkComms.AppendGlobalIncomingPacketHandler<string>(PacketType.REQ_UDPInfo, HandleUDPInfo);
-
-            //request p2p connection with specified client
-            NetworkComms.AppendGlobalIncomingPacketHandler<P2PRequest>(PacketType.REQ_P2PRequest, HandleP2PRequest);
+            //request NAT info
+            NetworkComms.AppendGlobalIncomingPacketHandler<P2PRequest>(PacketType.REQ_UDPP2PRequest, HandleUDPP2PRequest); 
 
             //feedback established p2p connection with specified client
-            NetworkComms.AppendGlobalIncomingPacketHandler<P2PRequest>(PacketType.REQ_P2PEstablished, HandleP2PEstablished);
-
-            //feedback fail p2p connection with specified client
-            NetworkComms.AppendGlobalIncomingPacketHandler<P2PRequest>(PacketType.REQ_P2PFailed, HandleP2PFailed);
+            NetworkComms.AppendGlobalIncomingPacketHandler<P2PRequest>(PacketType.REQ_P2PEstablished, HandleP2PEstablished); 
 
             NetworkComms.AppendGlobalConnectionCloseHandler(HandleConnectionClose);
         }

@@ -14,27 +14,24 @@ namespace ClientCore
 {
     public partial class TwoServerCore
     {
-        private void HandleP2PEstablished(PacketHeader header, Connection connection, string guid)
+        private void UDPP2PConnected(string fromGuid, IPEndPoint ipEndPoint)
         {
-            var clientInfo = _clientInfoList.FirstOrDefault(clientEx => clientEx.Client.Guid == guid);
-            var ipEndPoint = (IPEndPoint)connection.ConnectionInfo.RemoteEndPoint;
+            var clientInfo = _clientInfoList.FirstOrDefault(clientEx => clientEx.Client.Guid == fromGuid);
+            P2PMessageReceivedAction(string.Format("Connected with {0}({1}:{2})", clientInfo.Client.Name, ipEndPoint.Address, ipEndPoint.Port));
 
             clientInfo.IP = ipEndPoint.Address.ToString();
             clientInfo.Port = ipEndPoint.Port;
-
             clientInfo.Established = true;
 
-            P2PMessageReceivedAction(string.Format("[ {0}({1}:{2}) ]: Test P2P connection", clientInfo.Client.Name, ipEndPoint.Address, ipEndPoint.Port));
-
-            if (!_isP2PSource)
+            if (!_udpTraversal.IsSource)
             {
-                //test P2P connection
-                connection.SendObject<string>(PacketType.REQ_P2PEstablished, LocalClientInfo.Client.Guid);
+                //notify p2p source
+                _udpTraversal.Connect(LocalClientInfo.Client.Guid, ipEndPoint.Address, ipEndPoint.Port);
             }
             else
             {
                 //for show in server
-                _mainConnection.SendObject<P2PRequest>(PacketType.REQ_P2PEstablished, new P2PRequest { SourceGuid = LocalClientInfo.Client.Guid, TargetGuid = guid });
+                _mainConnection.SendObject<P2PRequest>(PacketType.REQ_P2PEstablished, new P2PRequest { SourceGuid = LocalClientInfo.Client.Guid, TargetGuid = fromGuid });
             }
         }
 
