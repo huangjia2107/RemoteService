@@ -8,14 +8,13 @@ using NetworkCommsDotNet.Connections.TCP;
 using System.Net;
 using ClientCore.Config;
 using Server.Config;
-using ClientCore.Interface;
 using NetworkCommsDotNet.Connections.UDP;
 using ClientCore.Models;
 using P2PHelper.UDP;
 
 namespace ClientCore
 {
-    public partial class TwoServerCore : IClientCore
+    public partial class MainClient
     {
         public Action<IEnumerable<ClientInfoEx>> ClientInfoListChangedAction { get; set; }
         public Action<string> ServerMessageReceivedAction { get; set; }
@@ -31,7 +30,7 @@ namespace ClientCore
         private Connection _mainConnection = null; 
         private UDPTraversal _udpTraversal = null; 
 
-        public TwoServerCore()
+        public MainClient()
         {
             _serverConfig = ConfigHelper<ServerConfig>.Instance().GetServerConfig();
             _clientInfoList = new List<ClientInfoEx>();

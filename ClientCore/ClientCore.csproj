@@ -75,12 +75,11 @@
       <Link>Models\PacketType.cs</Link>
     </Compile>
     <Compile Include="Config\ServerConfig.cs" />
-    <Compile Include="Interface\IClientCore.cs" />
     <Compile Include="Models\ClientInfoEx.cs" />
-    <Compile Include="Two\HandleP2PResponse.cs" />
-    <Compile Include="Two\HandleResponse.cs" />
-    <Compile Include="Two\RequestToServer.cs" />
-    <Compile Include="Two\TwoServerCore.cs" />
+    <Compile Include="Core\HandleP2PResponse.cs" />
+    <Compile Include="Core\HandleResponse.cs" />
+    <Compile Include="Core\RequestToServer.cs" />
+    <Compile Include="Core\MainClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\CommonHelper.cs" />
     <Compile Include="Utils\ConnectionHelper.cs" />

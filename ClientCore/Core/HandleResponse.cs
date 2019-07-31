@@ -8,7 +8,7 @@ using Server.Models;
 
 namespace ClientCore
 {
-    public partial class TwoServerCore
+    public partial class MainClient
     {
         private void HandleOnlineClientInfos(PacketHeader header, Connection connection, ClientInfo[] clientInfos)
         {
@@ -27,7 +27,6 @@ namespace ClientCore
 
             ServerMessageReceivedAction(string.Format("Local UDP Info = {0}, {1}", _udpTraversal.LocalEndPoint, message));
         }
-
 
         private void HandleUDPP2PRequest(PacketHeader header, Connection connection, P2PClient p2pClient)
         {

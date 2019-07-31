@@ -17,7 +17,7 @@ namespace Client
 
             _clientModel = new ClientModel(); 
 
-            this.Title = _clientModel.ClientCore.LocalClientInfo.Client.Name;
+            this.Title = _clientModel.Client.LocalClientInfo.Client.Name;
             this.DataContext = _clientModel; 
         }
 
@@ -25,7 +25,7 @@ namespace Client
         {
             ThreadPool.QueueUserWorkItem(state =>
             {
-                _clientModel.ClientCore.Start();
+                _clientModel.Client.Start();
             });
         }
 

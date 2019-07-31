@@ -123,7 +123,7 @@ namespace Server.Core
                 targetClient.Name, targetTCPIPPort.Address, targetTCPIPPort.Port,
                 sourceUDPIPPort.Address, sourceUDPIPPort.Port));
 
-            targetClient.Connection.SendObject<P2PClient>("UDP_P2P_Request", new P2PClient { GUID = p2pRequest.SourceGuid, IP = sourceUDPIPPort.Address.ToString(), Port = sourceUDPIPPort.Port });
+            targetClient.Connection.SendObject<P2PClient>(PacketType.REQ_UDPP2PRequest, new P2PClient { GUID = p2pRequest.SourceGuid, IP = sourceUDPIPPort.Address.ToString(), Port = sourceUDPIPPort.Port });
         } 
 
         private void HandleP2PEstablished(PacketHeader header, Connection connection, P2PRequest p2pRequest)

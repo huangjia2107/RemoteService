@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using ClientCore;
-using ClientCore.Interface;
+using ClientCore; 
 using ClientCore.Config;
 using Server.Config;
 using ClientCore.Models;
@@ -17,7 +16,7 @@ namespace Client.Models
 {
     class ClientModel : ViewModelBase
     {
-        public IClientCore ClientCore { get; private set; }
+        public MainClient Client { get; private set; }
         public ScreenCapture Capture { get; private set; }
 
         private ServerConfig _serverConfig = null;
@@ -28,7 +27,7 @@ namespace Client.Models
             _clientInfoList = new List<ClientInfoEx>();
 
             Capture = new ScreenCapture((int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight);
-            ClientCore = new TwoServerCore();
+            Client = new MainClient();
 
             ServerCommunities = new ObservableCollection<string>();
             P2PCommunities = new ObservableCollection<string>();

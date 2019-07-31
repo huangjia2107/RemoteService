@@ -14,26 +14,26 @@ namespace P2PHelper.UDP
 {
     public class UDPTraversal
     {
-        private IPAddress _udpServerIP = null;
-        private int _udpServerPort;
+        private IPAddress _serverIP = null;
+        private int _serverPort;
 
-        private UDPConnection _udpConnection = null;
+        private Connection _connection = null;
         private Action<string, IPEndPoint> _connected = null;
 
         public bool IsSource { get; private set; }
 
         public EndPoint LocalEndPoint
         {
-            get { return _udpConnection == null ? null : _udpConnection.ConnectionInfo.LocalEndPoint; }
+            get { return _connection == null ? null : _connection.ConnectionInfo.LocalEndPoint; }
         }
 
         public UDPTraversal(string udpServerIP, int udpServerPort, Action<string, IPEndPoint> connected)
         {
-            _udpServerIP = IPAddress.Parse(udpServerIP);
-            _udpServerPort = udpServerPort;
+            _serverIP = IPAddress.Parse(udpServerIP);
+            _serverPort = udpServerPort;
             _connected = connected;
 
-            _udpConnection = CreateUDPConnection();
+            _connection = CreateUDPConnection();
 
             NetworkComms.AppendGlobalIncomingPacketHandler<string>(PacketType.REQ_UDPP2PConnect, Connected);
         }
@@ -53,7 +53,7 @@ namespace P2PHelper.UDP
         //tell target to try punch
         public bool Request<T>(T message, bool isSource)
         {
-            var result = Send(PacketType.REQ_UDPP2PRequest, message, _udpServerIP, _udpServerPort);
+            var result = Send(PacketType.REQ_UDPP2PRequest, message, _serverIP, _serverPort);
             if (result)
                 IsSource = isSource;
 
@@ -69,7 +69,7 @@ namespace P2PHelper.UDP
             var ttl = _udpConnection.Ttl;
             _udpConnection.Ttl = 3;
 
-            if (!MultiholePunching(ip, port, port, 2000))
+            if (!MultiholePunching(ip, port, port, 1000))
             {
                 _udpConnection.Ttl = ttl;
                 return;
@@ -111,12 +111,12 @@ namespace P2PHelper.UDP
 
         public bool Send<T>(string packetType, T message, IPAddress ip, int port)
         {
-            if (_udpConnection == null)
+            if (_connection == null)
                 return false;
 
             try
             {
-                _udpConnection.SendObject<T>(packetType, message, new IPEndPoint(ip, port));
+                (_connection as UDPConnection).SendObject<T>(packetType, message, new IPEndPoint(ip, port));
             }
             catch (Exception ex)
             {

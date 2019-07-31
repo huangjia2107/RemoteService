@@ -36,7 +36,7 @@ namespace Server.Core
         {
             NetworkComms.AppendGlobalConnectionEstablishHandler(HandleConnectionEstablish);
 
-            //finish client info
+            //send self client info
             NetworkComms.AppendGlobalIncomingPacketHandler<ClientInfo>(PacketType.REQ_ClientInfo, HandleClientInfo);
 
             //request online client infos

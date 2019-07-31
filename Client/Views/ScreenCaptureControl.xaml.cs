@@ -42,7 +42,7 @@ namespace Client.Views
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             _clientModel = this.DataContext as ClientModel;
-            _clientModel.ClientCore.ScreenshotReceivedAction = ScreenshotReceived;
+            _clientModel.Client.ScreenshotReceivedAction = ScreenshotReceived;
         }
 
         private void ScreenshotReceived(Screenshot screenshot)

@@ -8,17 +8,17 @@ using System.Diagnostics;
 using Server.Models;
 using NetworkCommsDotNet;
 using NetworkCommsDotNet.Connections.TCP;
-using ClientCore.Interface;
 
 namespace ClientCore
 {
-    public partial class TwoServerCore
+    public partial class MainClient
     {
         private void UDPP2PConnected(string fromGuid, IPEndPoint ipEndPoint)
         {
             var clientInfo = _clientInfoList.FirstOrDefault(clientEx => clientEx.Client.Guid == fromGuid);
             P2PMessageReceivedAction(string.Format("Connected with {0}({1}:{2})", clientInfo.Client.Name, ipEndPoint.Address, ipEndPoint.Port));
 
+            //update p2p ip and port
             clientInfo.IP = ipEndPoint.Address.ToString();
             clientInfo.Port = ipEndPoint.Port;
             clientInfo.Established = true;
@@ -41,7 +41,12 @@ namespace ClientCore
             var clientInfo = _clientInfoList.FirstOrDefault(clientEx => clientEx.IP == ipEndPoint.Address.ToString() && clientEx.Port == ipEndPoint.Port);
 
             if (clientInfo != null)
+            {
                 P2PMessageReceivedAction(string.Format("[ {0}({1}:{2}) ]: {3}", clientInfo.Client.Name, ipEndPoint.Address, ipEndPoint.Port, message));
+
+                if (message != "~READ~")
+                    _udpTraversal.Send(PacketType.REQ_P2PMessage, "~READ~", ipEndPoint.Address, ipEndPoint.Port);
+            }
             else
                 P2PMessageReceivedAction(string.Format("[ {0}({1}:{2}) ]: {3}", "UnKnown", ipEndPoint.Address, ipEndPoint.Port, message));
         }

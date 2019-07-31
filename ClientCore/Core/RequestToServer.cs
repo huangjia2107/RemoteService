@@ -8,13 +8,12 @@ using System.Net;
 using NetworkCommsDotNet.Connections.TCP;
 using NetworkCommsDotNet;
 using NetworkCommsDotNet.Tools;
-using ClientCore.Interface;
 using NetworkCommsDotNet.Connections.UDP;
 using ClientCore.Utils;
 
 namespace ClientCore
 {
-    public partial class TwoServerCore
+    public partial class MainClient
     {
         public void TestNAT()
         {

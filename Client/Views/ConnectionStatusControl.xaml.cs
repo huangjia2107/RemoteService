@@ -38,9 +38,9 @@ namespace Client.Views
         {
             _clientModel = this.DataContext as ClientModel;
 
-            _clientModel.ClientCore.ClientInfoListChangedAction = ClientInfoListChanged;
-            _clientModel.ClientCore.ServerMessageReceivedAction = ServerMessageRecieved;
-            _clientModel.ClientCore.P2PMessageReceivedAction = P2PMessageRecieved;
+            _clientModel.Client.ClientInfoListChangedAction = ClientInfoListChanged;
+            _clientModel.Client.ServerMessageReceivedAction = ServerMessageRecieved;
+            _clientModel.Client.P2PMessageReceivedAction = P2PMessageRecieved;
         }
 
         private void ClientInfoListChanged(IEnumerable<ClientInfoEx> clientInfoList)
@@ -108,19 +108,19 @@ namespace Client.Views
             {
                 ThreadPool.QueueUserWorkItem(state =>
                 {
-                    _clientModel.ClientCore.RequestP2PConnection(_clientModel.SelectedClient.Client.Guid);
+                    _clientModel.Client.RequestP2PConnection(_clientModel.SelectedClient.Client.Guid);
                 });
             }
         }
 
         private void Refresh_Click(object sender, RoutedEventArgs e)
         {
-            _clientModel.ClientCore.RefreshOnlieClients();
+            _clientModel.Client.RefreshOnlieClients();
         }
 
         private void TestNAT_Click(object sender, RoutedEventArgs e)
         {
-            _clientModel.ClientCore.TestNAT();
+            _clientModel.Client.TestNAT();
         }
 
         private void Send_Click(object sender, RoutedEventArgs e)
@@ -130,7 +130,7 @@ namespace Client.Views
 
             ThreadPool.QueueUserWorkItem(state =>
             {
-                _clientModel.ClientCore.Send(_clientModel.SelectedClient.Client.Guid, (string)state);
+                _clientModel.Client.Send(_clientModel.SelectedClient.Client.Guid, (string)state);
             }, MessageTextBox.Text);
 
             MessageTextBox.Text = string.Empty;
@@ -138,7 +138,7 @@ namespace Client.Views
 
         private bool SendScreenshotBuffer(IPAddress ip, int port, byte[] buffer, int originLength, long compressLength)
         {
-            if (!_clientModel.ClientCore.ShareScreenshot(ip, port,
+            if (!_clientModel.Client.ShareScreenshot(ip, port,
                                         new Screenshot
                                         {
                                             Buffer = buffer,
