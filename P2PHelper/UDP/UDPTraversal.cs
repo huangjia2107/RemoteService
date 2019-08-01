@@ -17,7 +17,7 @@ namespace P2PHelper.UDP
         private IPAddress _serverIP = null;
         private int _serverPort;
 
-        private Connection _connection = null;
+        private UDPConnection _connection = null;
         private Action<string, IPEndPoint> _connected = null;
 
         public bool IsSource { get; private set; }
@@ -66,14 +66,14 @@ namespace P2PHelper.UDP
         public bool TryPunch(IPAddress sourceIP, int sourcePort)
         {
             /*
-            var ttl = _udpConnection.Ttl;
-            _udpConnection.Ttl = 3;
+            var ttl = _connection.Ttl;
+            Trace.WriteLine("[ UDP ] Try punch, original TTL = " + ttl);
+            _connection.Ttl = 3;
 
-            if (!MultiholePunching(ip, port, port, 1000))
-            {
-                _udpConnection.Ttl = ttl;
-                return;
-            }
+            var result = MultiholePunching(sourceIP, sourcePort, sourcePort, 1000);
+            _connection.Ttl = ttl;
+
+            return result;
             */
 
             //just punch, do not care result.
@@ -84,7 +84,14 @@ namespace P2PHelper.UDP
         //connect to target
         public bool Connect<T>(T message, IPAddress targetIP, int targetPort)
         {
-            return Send(PacketType.REQ_UDPP2PConnect, message, targetIP, targetPort);
+            //source and target are not Symmetric NAT
+            //Send(PacketType.REQ_UDPP2PConnect, message, targetIP, targetPort);
+
+            //target is Symmetric NAT, and source not, need port prediction
+            for (int i = targetPort - 10; i < targetPort + 10; i++)
+                Send(PacketType.REQ_UDPP2PConnect, message, targetIP, i);
+
+            return true;
         }
 
         public void CleanUp()
@@ -116,11 +123,11 @@ namespace P2PHelper.UDP
 
             try
             {
-                (_connection as UDPConnection).SendObject<T>(packetType, message, new IPEndPoint(ip, port));
+                _connection.SendObject<T>(packetType, message, new IPEndPoint(ip, port));
             }
             catch (Exception ex)
             {
-                Trace.TraceError("[ UDP ] SendToIPEndPoint, Error = {0}", ex.Message);
+                Trace.TraceError("[ UDP ] SendToIPEndPoint, Error = {0}", ex.Message + ex.StackTrace);
                 return false;
             }
 
@@ -129,8 +136,10 @@ namespace P2PHelper.UDP
 
         private bool MultiholePunching(IPAddress targetIP, int targetPort, int startPort, int tryTimes)
         {
+            Trace.WriteLine("[ UDP ] Try punch, target port = " + targetPort);
+
             var ports = Enumerable.Range(startPort, 65535 - startPort + 1).ToArray();
-            Shuffle(ports);
+            //Shuffle(ports);
 
             int i = 0;
             while (i < Math.Min(tryTimes, ports.Length))
@@ -138,10 +147,12 @@ namespace P2PHelper.UDP
                 var port = ports[i];
                 if (port != targetPort)
                 {
+                    Trace.WriteLine("[ UDP ] Try punch, port = " + port);
+
                     if (!Send("IGNORE", "Try Punch", targetIP, port))
                         return false;
 
-                    System.Threading.Thread.Sleep(50);
+                    System.Threading.Thread.Sleep(10);
                 }
 
                 i++;

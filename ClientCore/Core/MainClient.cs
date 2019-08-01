@@ -27,8 +27,8 @@ namespace ClientCore
         private ServerConfig _serverConfig = null;
 
         //long connection
-        private Connection _mainConnection = null; 
-        private UDPTraversal _udpTraversal = null; 
+        private Connection _mainConnection = null;
+        private UDPTraversal _udpTraversal = null;
 
         public MainClient()
         {
@@ -63,10 +63,10 @@ namespace ClientCore
 
         public void Start()
         {
-//             if (!ResolveDns())
-//                 return;
-
-            _serverConfig.IP = "127.0.0.1";
+            if (!ResolveDns())
+                return;
+             
+            //_serverConfig.IP = "127.0.0.1";
             ServerMessageReceivedAction("Start connection to Main server");
 
             try

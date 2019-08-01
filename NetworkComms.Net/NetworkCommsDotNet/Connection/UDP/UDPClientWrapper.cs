@@ -167,8 +167,8 @@ namespace NetworkCommsDotNet.Connections.UDP
 
         public short Ttl
         {
-            get { return udpClient.Client.Ttl; }
-            set { udpClient.Client.Ttl = value; }
+            get { return udpClient.Ttl; }
+            set { udpClient.Ttl = value; }
         }
     }
 #endif
