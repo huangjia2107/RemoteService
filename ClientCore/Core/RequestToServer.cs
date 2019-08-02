@@ -15,11 +15,18 @@ namespace ClientCore
 {
     public partial class MainClient
     {
-        public void TestNAT()
+        public void TestUDP1()
         {
             if (_mainConnection != null && _mainConnection.ConnectionInfo.ConnectionState == ConnectionState.Established)
             {
                 _udpTraversal.Send(PacketType.REQ_NATInfo, LocalClientInfo.Client.Guid, IPAddress.Parse(_serverConfig.IP), _serverConfig.P2P_Port);
+            }
+        }
+
+        public void TestUDP2()
+        {
+            if (_mainConnection != null && _mainConnection.ConnectionInfo.ConnectionState == ConnectionState.Established)
+            {
                 _udpTraversal.Send(PacketType.REQ_NATInfo, LocalClientInfo.Client.Guid, IPAddress.Parse(_serverConfig.IP), _serverConfig.Test_Port);
             }
         }
@@ -32,7 +39,7 @@ namespace ClientCore
 
             var targetClient = _clientInfoList.FirstOrDefault(c => c.Client.Guid == targetGuid && c.Established);
             if (targetClient == null)
-                return; 
+                return;
 
             P2PMessageReceivedAction(string.Format("[ {0} ]: {1}", "Local", message));
 
@@ -50,7 +57,7 @@ namespace ClientCore
         public void RequestP2PConnection(string targetGuid)
         {
             if (_mainConnection != null && _mainConnection.ConnectionInfo.ConnectionState == ConnectionState.Established)
-            {  
+            {
                 var targetClient = _clientInfoList.FirstOrDefault(clientEx => clientEx.Client.Guid == targetGuid);
                 if (targetClient == null)
                     return;
@@ -73,6 +80,6 @@ namespace ClientCore
         {
             ServerMessageReceivedAction("Established with Main server, send client info");
             _mainConnection.SendObject<ClientInfo>(PacketType.REQ_ClientInfo, LocalClientInfo.Client);
-        }   
+        }
     }
 }

@@ -118,9 +118,14 @@ namespace Client.Views
             _clientModel.Client.RefreshOnlieClients();
         }
 
-        private void TestNAT_Click(object sender, RoutedEventArgs e)
+        private void TestUDP1_Click(object sender, RoutedEventArgs e)
         {
-            _clientModel.Client.TestNAT();
+            _clientModel.Client.TestUDP1();
+        }
+
+        private void TestUDP2_Click(object sender, RoutedEventArgs e)
+        {
+            _clientModel.Client.TestUDP2();
         }
 
         private void Send_Click(object sender, RoutedEventArgs e)

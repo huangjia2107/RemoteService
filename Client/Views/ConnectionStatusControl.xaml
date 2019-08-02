@@ -56,10 +56,12 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="Server" FontSize="15" VerticalAlignment="Center" Margin="10,0,0,0"/>
                 <Button Grid.Column="2" Width="65" Height="30" Content="Clear" Margin="0,0,10,0" Click="ClearServer_Click"/>
-                <Button Grid.Column="3" Width="65" Height="30" Content="Test NAT" Margin="0,0,10,0" Click="TestNAT_Click"/>
+                <Button Grid.Column="3" Width="65" Height="30" Content="UDP1" Margin="0,0,10,0" Click="TestUDP1_Click"/>
+                <Button Grid.Column="4" Width="65" Height="30" Content="UDP2" Margin="0,0,10,0" Click="TestUDP2_Click"/>
             </Grid>
             <ScrollViewer Grid.Row="1" x:Name="ServerScrollViewer" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                 <ItemsControl ItemsSource="{Binding ServerCommunities}"/>

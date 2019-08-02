@@ -65,18 +65,12 @@ namespace P2PHelper.UDP
         //try punch to source
         public bool TryPunch(IPAddress sourceIP, int sourcePort)
         {
-            /*
-            var ttl = _connection.Ttl;
-            Trace.WriteLine("[ UDP ] Try punch, original TTL = " + ttl);
-            _connection.Ttl = 3;
+            //just punch, do not care result, so can adjust TTL.
 
-            var result = MultiholePunching(sourceIP, sourcePort, sourcePort, 1000);
-            _connection.Ttl = ttl;
+            //source is Symmetric NAT
+            //return MultiholePunching(sourceIP, sourcePort, sourcePort + 200, 600);
 
-            return result;
-            */
-
-            //just punch, do not care result.
+            //source is not Symmetric NAT
             return Send<string>("IGNORE", "Try Punch", sourceIP, sourcePort);
         }
 
@@ -84,10 +78,10 @@ namespace P2PHelper.UDP
         //connect to target
         public bool Connect<T>(T message, IPAddress targetIP, int targetPort)
         {
-            //source and target are not Symmetric NAT
+            //target is not Symmetric NAT
             //Send(PacketType.REQ_UDPP2PConnect, message, targetIP, targetPort);
 
-            //target is Symmetric NAT, and source not, need port prediction
+            //target is Symmetric NAT, need port prediction
             for (int i = targetPort - 10; i < targetPort + 10; i++)
                 Send(PacketType.REQ_UDPP2PConnect, message, targetIP, i);
 
